@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "outpass_secret_key")
 
 DB_CONFIG = {
-    "host": os.environ.get("MYSQLHOST", "localhost"),
+    "host": os.environ.get("MYSQLHOST", "127.0.0.1"),  # localhost
     "user": os.environ.get("MYSQLUSER", "root"),
     "password": os.environ.get("MYSQLPASSWORD", "N@rs1ng#967!"),
     "database": os.environ.get("MYSQLDATABASE", "outpass_system"),
