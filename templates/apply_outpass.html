@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="form-box" style="max-width: 540px; text-align: left;">
+    <div style="display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 25px;">
+        <div style="width: 10px; height: 10px; border-radius: 50%; background-color: var(--accent-indigo); box-shadow: 0 0 10px var(--accent-indigo);"></div>
+        <div>
+            <h2 style="margin: 0; font-size: 22px; text-align: left;">Apply for Outpass</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">Submit a request for mentor approval.</p>
+        </div>
+    </div>
+
+    <form method="POST">
+        <label>Reason for Outpass</label>
+        <textarea name="reason" rows="3" placeholder="Provide a detailed reason (e.g. Medical checkup, family emergency)" required style="margin-bottom: 10px; resize: none;"></textarea>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
+            <div>
+                <label>Out Date</label>
+                <input type="date" name="out_date" required>
+            </div>
+            <div>
+                <label>Out Time</label>
+                <input type="time" name="out_time" required>
+            </div>
+        </div>
+
+        <label>Parent Contact Number</label>
+        <input type="tel" name="parent_contact" placeholder="+91 XXXXX XXXXX" required style="margin-bottom: 25px;">
+
+        <button type="submit" class="btn full">Submit Request</button>
+    </form>
+</div>
+
+{% endblock %}

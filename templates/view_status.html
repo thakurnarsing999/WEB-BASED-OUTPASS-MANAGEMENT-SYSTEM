@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+    <div>
+        <h2 style="margin-bottom: 4px;">My Outpass Requests</h2>
+        <p>Monitor your active outpass permissions, status metrics, and digital OTP tokens.</p>
+    </div>
+    <a class="btn small secondary" href="{{ url_for('student_dashboard') }}">Back to Dashboard</a>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Request ID</th>
+                <th>Reason</th>
+                <th>Out Date / Time</th>
+                <th>Approval Status</th>
+                <th>Verification OTP</th>
+                <th>Mentor Remarks</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for req in requests_data %}
+            <tr>
+                <td style="font-weight: bold;">#{{ req.request_id }}</td>
+                <td style="color: var(--text-primary); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ req.reason }}">{{ req.reason }}</td>
+                <td>
+                    <div style="font-weight: 500; color: var(--text-primary);">{{ req.out_date }}</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">{{ req.out_time }}</div>
+                </td>
+
+                <td>
+                    <span class="status {{ req.status|lower }}">
+                        {{ req.status }}
+                    </span>
+                </td>
+
+                <td style="font-family: monospace; font-size: 15px; font-weight: bold; color: var(--accent-cyan);">
+                    {% if req.otp %}
+                        {{ req.otp }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td style="font-size: 13px;">
+                    {% if req.mentor_remarks %}
+                        {{ req.mentor_remarks }}
+                    {% else %}
+                        <span style="color: var(--text-muted); font-style: italic;">Pending review</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px 0;">You have not submitted any outpass requests yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

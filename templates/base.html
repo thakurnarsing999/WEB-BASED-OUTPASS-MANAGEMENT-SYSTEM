@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web-Based Out Pass Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    {% if 'student_id' in session or 'mentor_id' in session or 'admin_id' in session or 'security_id' in session %}
+    <nav class="navbar">
+        <a href="{{ url_for('home') }}" class="logo" style="text-decoration: none;">
+            OutPass <span style="font-weight: 400; color: var(--accent-cyan);">Portal</span>
+        </a>
+
+        <div class="nav-links">
+            {% if 'student_id' in session %}
+                <a href="{{ url_for('student_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('apply_outpass') }}">Apply Outpass</a>
+                <a href="{{ url_for('view_status') }}">My History</a>
+            {% elif 'mentor_id' in session %}
+                <a href="{{ url_for('mentor_dashboard') }}">Applications</a>
+            {% elif 'security_id' in session %}
+                <a href="{{ url_for('security_dashboard') }}">Verification Terminal</a>
+            {% elif 'admin_id' in session %}
+                <a href="{{ url_for('admin_dashboard') }}">Admin Command Center</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="btn small secondary" style="margin-left: 10px;">Logout</a>
+        </div>
+    </nav>
+    {% endif %}
+
+    <div class="container">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

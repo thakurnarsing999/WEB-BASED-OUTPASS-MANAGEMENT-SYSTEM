@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="form-box" style="max-width: 540px; text-align: left;">
+    <div style="display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 25px;">
+        <div style="width: 10px; height: 10px; border-radius: 50%; background-color: var(--accent-indigo); box-shadow: 0 0 10px var(--accent-indigo);"></div>
+        <div>
+            <h2 style="margin: 0; font-size: 22px; text-align: left;">Security Terminal</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">Verify student outpass legitimacy via OTP check.</p>
+        </div>
+    </div>
+
+    <form method="POST">
+        <label>Outpass Request ID</label>
+        <input type="number" name="request_id" placeholder="e.g. 1024" required style="margin-bottom: 10px;">
+
+        <label>Generated OTP Code</label>
+        <input type="text" name="otp" placeholder="Enter 4-digit code" required style="margin-bottom: 25px; letter-spacing: 2px; text-align: center; font-size: 18px; font-weight: bold; font-family: monospace;">
+
+        <button type="submit" class="btn full">Scan & Verify Pass</button>
+    </form>
+
+    {% if result %}
+        <div class="verification-result {{ result_type }}">
+            <div style="font-weight: bold; font-size: 16px; margin-bottom: 4px;">
+                {% if result_type == 'success' %}
+                    ✓ Pass Approved & Logged
+                {% else %}
+                    ✗ Verification Failed
+                {% endif %}
+            </div>
+            {{ result }}
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

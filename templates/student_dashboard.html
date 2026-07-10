@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="dashboard" style="text-align: left; max-width: 900px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 25px;">
+        <div>
+            <h2 style="margin-bottom: 4px;">Student Dashboard</h2>
+            <p>Welcome back, <strong style="color: var(--text-primary);">{{ session["student_name"] }}</strong></p>
+        </div>
+        <div class="status approved" style="font-size: 11px;">Active Student Session</div>
+    </div>
+
+    <div class="metrics-grid" style="grid-template-columns: repeat(2, 1fr);">
+        <div class="metric-card" style="padding: 25px 20px; display: flex; flex-direction: column; justify-content: space-between; text-align: left;">
+            <div>
+                <h4 style="color: var(--accent-indigo); font-size: 14px; font-weight: 700; margin-bottom: 10px;">Apply for Outpass</h4>
+                <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;">Submit a new digital outpass request. Your mentor will be notified for review and OTP generation.</p>
+            </div>
+            <a class="btn small" href="{{ url_for('apply_outpass') }}" style="align-self: flex-start;">New Request</a>
+        </div>
+        
+        <div class="metric-card" style="padding: 25px 20px; display: flex; flex-direction: column; justify-content: space-between; text-align: left;">
+            <div>
+                <h4 style="color: var(--accent-cyan); font-size: 14px; font-weight: 700; margin-bottom: 10px;">Outpass History</h4>
+                <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;">Monitor approval progress of pending outpass applications, read remarks, and fetch active OTPs.</p>
+            </div>
+            <a class="btn small secondary" href="{{ url_for('view_status') }}" style="align-self: flex-start;">Track History</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div>
+        <h2 style="margin-bottom: 4px;">Mentor Dashboard</h2>
+        <p>Approve, reject, and review active student outpass requests.</p>
+    </div>
+    <div class="status approved" style="font-size: 11px;">Active Mentor: {{ session["mentor_username"] }}</div>
+</div>
+
+{% set pending_count = namespace(value=0) %}
+{% set approved_count = namespace(value=0) %}
+{% set total_count = requests_data|length %}
+{% for req in requests_data %}
+    {% if req.status == 'Pending' %}
+        {% set pending_count.value = pending_count.value + 1 %}
+    {% elif req.status == 'Approved' or req.status == 'Exited' %}
+        {% set approved_count.value = approved_count.value + 1 %}
+    {% endif %}
+{% endfor %}
+
+<!-- Metrics Grid -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <h4>Total Requests</h4>
+        <div class="number">{{ total_count }}</div>
+    </div>
+    <div class="metric-card" style="border-color: rgba(234, 179, 8, 0.2);">
+        <h4>Pending Approval</h4>
+        <div class="number" style="color: var(--color-warning);">{{ pending_count.value }}</div>
+    </div>
+    <div class="metric-card" style="border-color: rgba(16, 185, 129, 0.2);">
+        <h4>Approved / Exited</h4>
+        <div class="number" style="color: var(--color-success);">{{ approved_count.value }}</div>
+    </div>
+</div>
+
+<h3>Outpass Applications</h3>
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Student</th>
+                <th>Roll No</th>
+                <th>Dept</th>
+                <th>Reason</th>
+                <th>Date / Time</th>
+                <th>Contact</th>
+                <th>Status</th>
+                <th>OTP</th>
+                <th>Action / Remarks</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for req in requests_data %}
+            <tr>
+                <td style="font-weight: bold;">#{{ req.request_id }}</td>
+                <td style="color: var(--text-primary);">{{ req.name }}</td>
+                <td>{{ req.roll_no }}</td>
+                <td>{{ req.department }} ({{ req.year }})</td>
+                <td><div class="reason-text" title="{{ req.reason }}">{{ req.reason }}</div></td>
+                <td>
+                    <div style="font-weight: 500; color: var(--text-primary);">{{ req.out_date }}</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">{{ req.out_time }}</div>
+                </td>
+                <td>{{ req.parent_contact }}</td>
+
+                <td>
+                    <span class="status {{ req.status|lower }}">
+                        {{ req.status }}
+                    </span>
+                </td>
+
+                <td style="font-family: monospace; font-size: 14px; font-weight: bold; color: var(--accent-cyan);">
+                    {% if req.otp %}
+                        {{ req.otp }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if req.status == "Pending" %}
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <form method="POST" action="{{ url_for('approve_request', request_id=req.request_id) }}" class="action-form" onsubmit="return confirmApprove()">
+                                <button type="submit" class="btn small full">Approve</button>
+                            </form>
+
+                            <form method="POST" action="{{ url_for('reject_request', request_id=req.request_id) }}" class="action-form" onsubmit="return confirmReject()" style="display: flex; gap: 4px;">
+                                <input type="text" name="remarks" placeholder="Remarks" required style="padding: 6px 10px; font-size: 12px; width: 100px;">
+                                <button type="submit" class="btn small danger">Reject</button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <span style="font-size: 13px; color: var(--text-muted);">{{ req.mentor_remarks }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="10" style="text-align: center; color: var(--text-muted); padding: 40px 0;">No outpass applications found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

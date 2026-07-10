@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Hero description sentence removed as requested -->
+<section class="hero" style="padding: 40px 20px 20px 20px; background: transparent; border: none; box-shadow: none; margin-bottom: 20px;">
+    <h1 style="font-size: 36px; background: linear-gradient(135deg, #fff 40%, #818cf8 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Web Based Out Pass Management System</h1>
+</section>
+
+<div class="form-box" style="max-width: 480px; margin: 0 auto 50px auto; text-align: left;">
+    <!-- Toggle Headers -->
+    <div class="tab-container" style="margin-bottom: 25px;">
+        <button type="button" id="loginTab" class="tab-button active" onclick="switchForm('login')" style="outline: none;">Sign In</button>
+        <button type="button" id="registerTab" class="tab-button" onclick="switchForm('register')" style="outline: none;">Register</button>
+    </div>
+
+    <!-- Unified Form -->
+    <form id="authForm" method="POST" action="{{ url_for('login') }}">
+        
+        <!-- Role selector - ALWAYS FIRST as requested -->
+        <label for="roleSelect">Select Role</label>
+        <select name="role" id="roleSelect" onchange="handleRoleChange()" required style="margin-bottom: 5px;">
+            <option value="Student">Student</option>
+            <option value="Mentor">Mentor</option>
+            <option value="Security">Security Guard</option>
+            <option value="Admin">Administrator</option>
+        </select>
+
+        <!-- Common Fields for Register (Name) -->
+        <div id="registerNameGroup" class="form-group" style="display: none;">
+            <label for="regName">Full Name</label>
+            <input type="text" name="name" id="regName" placeholder="Enter full name" style="margin-bottom: 5px;">
+        </div>
+
+        <!-- Phone Number Field (shown only during registration) -->
+        <div id="registerPhoneGroup" class="form-group" style="display: none;">
+            <label for="regPhone">Phone Number</label>
+            <input type="tel" name="phone_no" id="regPhone" placeholder="Enter phone number" style="margin-bottom: 5px;">
+        </div>
+
+        <label for="authEmail" id="emailLabel">Email ID / Username</label>
+        <input type="text" name="email" id="authEmail" placeholder="Enter email or roll no" required style="margin-bottom: 5px;">
+
+        <!-- Student Extra Fields -->
+        <div id="studentExtraGroup" class="form-group" style="display: none;">
+            <label for="rollNo">Roll Number</label>
+            <input type="text" name="roll_no" id="rollNo" placeholder="Enter roll number" style="margin-bottom: 5px;">
+
+            <label for="studentDept">Department</label>
+            <select name="department" id="studentDept" style="margin-bottom: 5px;">
+                <option value="CSE">CSE</option>
+                <option value="ECE">CSE-(AI/ML)</option>
+                <option value="EEE">CSE-(AI/DS)</option>
+                <option value="MECH">MECH</option>
+                <option value="CIVIL">CIVIL</option>
+                <option value="IT">IT</option>
+            </select>
+
+            <label for="studentYear">Year</label>
+            <select name="year" id="studentYear" style="margin-bottom: 5px;">
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="4th Year">4th Year</option>
+            </select>
+        </div>
+
+        <!-- Mentor Extra Field -->
+        <div id="mentorExtraGroup" class="form-group" style="display: none;">
+            <label for="staffId">Staff ID</label>
+            <input type="text" name="staff_id" id="staffId" placeholder="Enter staff ID" style="margin-bottom: 5px;">
+        </div>
+
+        <!-- Security Authorization Code for Admin & Security Guards -->
+        <div id="securityKeyGroup" class="form-group" style="display: none;">
+            <label for="authCode">Security Authorization Key</label>
+            <input type="password" name="auth_code" id="authCode" placeholder="Enter registration key" style="margin-bottom: 5px;">
+        </div>
+
+        <label for="authPassword">Password</label>
+        <input type="password" name="password" id="authPassword" placeholder="••••••••" required style="margin-bottom: 10px;">
+
+        <button type="submit" id="submitBtn" class="btn full" style="margin-top: 25px;">Sign In</button>
+    </form>
+</div>
+
+<script>
+function switchForm(mode) {
+    const authForm = document.getElementById('authForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+    const nameGroup = document.getElementById('registerNameGroup');
+    const regNameInput = document.getElementById('regName');
+    const phoneGroup = document.getElementById('registerPhoneGroup');
+    const regPhoneInput = document.getElementById('regPhone');
+
+    if (mode === 'login') {
+        authForm.action = "{{ url_for('login') }}";
+        submitBtn.textContent = 'Sign In';
+        loginTab.classList.add('active');
+        registerTab.classList.remove('active');
+        nameGroup.style.display = 'none';
+        regNameInput.removeAttribute('required');
+        phoneGroup.style.display = 'none';
+        regPhoneInput.removeAttribute('required');
+    } else {
+        authForm.action = "{{ url_for('register') }}";
+        submitBtn.textContent = 'Create Account';
+        loginTab.classList.remove('active');
+        registerTab.classList.add('active');
+        nameGroup.style.display = 'block';
+        regNameInput.setAttribute('required', 'required');
+        phoneGroup.style.display = 'block';
+        regPhoneInput.setAttribute('required', 'required');
+    }
+    handleRoleChange();
+}
+
+function handleRoleChange() {
+    const roleSelect = document.getElementById('roleSelect');
+    const registerTab = document.getElementById('registerTab');
+    const isRegister = registerTab.classList.contains('active');
+    
+    const studentGroup = document.getElementById('studentExtraGroup');
+    const rollNoInput = document.getElementById('rollNo');
+    const mentorGroup = document.getElementById('mentorExtraGroup');
+    const staffIdInput = document.getElementById('staffId');
+    const securityKeyGroup = document.getElementById('securityKeyGroup');
+    const authCodeInput = document.getElementById('authCode');
+
+    // Reset extra fields
+    studentGroup.style.display = 'none';
+    rollNoInput.removeAttribute('required');
+    mentorGroup.style.display = 'none';
+    staffIdInput.removeAttribute('required');
+    securityKeyGroup.style.display = 'none';
+    authCodeInput.removeAttribute('required');
+
+    if (isRegister) {
+        if (roleSelect.value === 'Student') {
+            studentGroup.style.display = 'block';
+            rollNoInput.setAttribute('required', 'required');
+        } else if (roleSelect.value === 'Mentor') {
+            mentorGroup.style.display = 'block';
+            staffIdInput.setAttribute('required', 'required');
+        }
+    }
+
+    // Dynamic visibility of Security Key for Admin & Security during BOTH login and register
+    if (roleSelect.value === 'Admin' || roleSelect.value === 'Security') {
+        securityKeyGroup.style.display = 'block';
+        authCodeInput.setAttribute('required', 'required');
+    }
+    
+    updateIdentifierField();
+}
+
+function updateIdentifierField() {
+    const roleSelect = document.getElementById('roleSelect').value;
+    const registerTab = document.getElementById('registerTab');
+    const isRegister = registerTab.classList.contains('active');
+    const emailLabel = document.getElementById('emailLabel');
+    const emailInput = document.getElementById('authEmail');
+
+    if (isRegister) {
+        emailLabel.textContent = 'Email ID';
+        emailInput.placeholder = 'Enter email address';
+    } else {
+        if (roleSelect === 'Student') {
+            emailLabel.textContent = 'Email ID / Roll Number';
+            emailInput.placeholder = 'Enter email or roll number';
+        } else if (roleSelect === 'Mentor') {
+            emailLabel.textContent = 'Email ID / Staff ID';
+            emailInput.placeholder = 'Enter email or staff ID';
+        } else {
+            emailLabel.textContent = 'Email ID';
+            emailInput.placeholder = 'Enter email address';
+        }
+    }
+}
+updateIdentifierField();
+</script>
+{% endblock %}

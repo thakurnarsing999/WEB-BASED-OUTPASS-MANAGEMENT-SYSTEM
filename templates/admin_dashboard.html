@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div>
+        <h2 style="margin-bottom: 4px;">System Admin Command Center</h2>
+        <p>Monitor system registrations and oversee outpass logs.</p>
+    </div>
+    <div class="status pending" style="font-size: 11px; color: #111827;">Root Administrator Session</div>
+</div>
+
+{% set student_count = students|length %}
+{% set request_count = requests_data|length %}
+{% set pending_count = namespace(value=0) %}
+{% for req in requests_data %}
+    {% if req.status == 'Pending' %}
+        {% set pending_count.value = pending_count.value + 1 %}
+    {% endif %}
+{% endfor %}
+
+<!-- Metrics Grid -->
+<div class="metrics-grid" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="metric-card" style="border-color: rgba(99, 102, 241, 0.25);">
+        <h4>Registered Students</h4>
+        <div class="number">{{ student_count }}</div>
+    </div>
+    <div class="metric-card" style="border-color: rgba(6, 182, 212, 0.25);">
+        <h4>Total Outpass Requests</h4>
+        <div class="number" style="color: var(--accent-cyan);">{{ request_count }}</div>
+    </div>
+    <div class="metric-card" style="border-color: rgba(234, 179, 8, 0.25);">
+        <h4>System Pending Requests</h4>
+        <div class="number" style="color: var(--color-warning);">{{ pending_count.value }}</div>
+    </div>
+</div>
+
+<h3 style="margin-top: 40px; margin-bottom: 15px;">Registered Students Registry</h3>
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Roll No</th>
+                <th>Email Address</th>
+                <th>Department</th>
+                <th>Year</th>
+                <th>Phone No</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td style="font-weight: bold;">#{{ student.student_id }}</td>
+                <td style="color: var(--text-primary);">{{ student.name }}</td>
+                <td>{{ student.roll_no }}</td>
+                <td>{{ student.email }}</td>
+                <td>{{ student.department }}</td>
+                <td>{{ student.year }}</td>
+                <td>{{ student.phone_no }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px 0;">No registered students found in database.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<h3 style="margin-top: 40px; margin-bottom: 15px;">System-wide Outpass Audit Log</h3>
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Student</th>
+                <th>Roll No</th>
+                <th>Reason</th>
+                <th>Date / Time</th>
+                <th>Status</th>
+                <th>OTP</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requests_data %}
+            <tr>
+                <td style="font-weight: bold;">#{{ req.request_id }}</td>
+                <td style="color: var(--text-primary);">{{ req.name }}</td>
+                <td>{{ req.roll_no }}</td>
+                <td><div class="reason-text" title="{{ req.reason }}">{{ req.reason }}</div></td>
+                <td>
+                    <div style="font-weight: 500; color: var(--text-primary);">{{ req.out_date }}</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">{{ req.out_time }}</div>
+                </td>
+                <td>
+                    <span class="status {{ req.status|lower }}">
+                        {{ req.status }}
+                    </span>
+                </td>
+                <td style="font-family: monospace; font-size: 14px; font-weight: bold; color: var(--accent-cyan);">
+                    {% if req.otp %}
+                        {{ req.otp }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td style="font-size: 13px;">
+                    {% if req.mentor_remarks %}
+                        {{ req.mentor_remarks }}
+                    {% else %}
+                        <span style="color: var(--text-muted); font-style: italic;">No remarks</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 40px 0;">No outpass records found in system.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

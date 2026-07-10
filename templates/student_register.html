@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="form-box">
+    <div class="tab-container">
+        <a href="{{ url_for('student_register') }}" class="tab-button active">Student</a>
+        <a href="{{ url_for('mentor_register') }}" class="tab-button">Mentor</a>
+        <a href="{{ url_for('security_register') }}" class="tab-button">Security</a>
+        <a href="{{ url_for('admin_register') }}" class="tab-button">Admin</a>
+    </div>
+
+    <h2>Student Registration</h2>
+
+    <form method="POST">
+        <label>Name</label>
+        <input type="text" name="name" required>
+
+        <label>Roll No</label>
+        <input type="text" name="roll_no" required>
+
+        <label>Email</label>
+        <input type="email" name="email" required>
+
+        <label>Password</label>
+        <input type="password" name="password" required>
+
+        <label>Department</label>
+        <input type="text" name="department"  required>
+
+        <label>Year</label>
+        <input type="text" name="year" required>
+
+        <label>Phone No</label>
+        <input type="text" name="phone_no" required>
+
+        <button type="submit" class="btn full">Register</button>
+    </form>
+
+    <p class="small-text">
+        Already registered?
+        <a href="{{ url_for('student_login') }}">Login here</a>
+    </p>
+</div>
+
+{% endblock %}
