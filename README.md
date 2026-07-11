@@ -36,6 +36,46 @@ To register or log in as a staff member (Admin, Mentor, or Security Guard), you 
 
 ---
 
+## 🔄 How to Make & Deploy Changes
+
+Whenever you want to modify your website, update a feature, or change any style in the future, follow this simple 4-step workflow:
+
+### Step 1: Make your changes locally
+Open your project in **VS Code** and edit the files:
+* **Layout / HTML Text**: Edit the files inside the `templates/` folder.
+* **Colors / Spacing / Styles**: Edit `static/style.css`.
+* **Python Routes / Logic**: Edit `app.py`.
+
+### Step 2: Test your changes locally on your PC
+Before pushing to the internet, make sure there are no errors on your local machine:
+1. Open Command Prompt inside your project folder.
+2. Start the local server:
+   ```cmd
+   python app.py
+   ```
+3. Open `http://127.0.0.1:5000/` in your browser and verify that everything looks and functions correctly.
+4. Press `Ctrl + C` in the command prompt to stop the server when you are done testing.
+
+### Step 3: Commit your changes to Git
+Once your changes are working perfectly on your local machine, save them to your local Git history. Open your terminal and run:
+```bash
+git add .
+git commit -m "Write a short summary of the changes you made"
+```
+
+### Step 4: Push to GitHub (This updates Vercel)
+Upload your committed code to the cloud:
+```bash
+git push origin main
+```
+*Note: Vercel will automatically detect the push, rebuild your application, and update the live website within 60 seconds.*
+
+### ⚠️ Special Step: If you modified the Database (SQL)
+If you made changes that affect your database structure (like adding a new table or column in `database.sql`):
+* Connect to your Railway public host (using MySQL Workbench) and execute the matching `ALTER` or `CREATE` SQL query so the cloud database has the new fields.
+
+---
+
 ## 💻 Tech Stack & Features
 
 * **Backend**: Python 3 / Flask Micro-framework
