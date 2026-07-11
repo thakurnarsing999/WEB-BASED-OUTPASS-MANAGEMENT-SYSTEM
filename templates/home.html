@@ -147,8 +147,8 @@ function handleRoleChange() {
         }
     }
 
-    // Dynamic visibility of Security Key for Admin & Security during BOTH login and register
-    if (roleSelect.value === 'Admin' || roleSelect.value === 'Security') {
+    // Dynamic visibility of Security Key for Admin, Security, & Mentor during BOTH login and register
+    if (roleSelect.value === 'Admin' || roleSelect.value === 'Security' || roleSelect.value === 'Mentor') {
         securityKeyGroup.style.display = 'block';
         authCodeInput.setAttribute('required', 'required');
     }

@@ -36,7 +36,7 @@ def register():
     phone_no = request.form["phone_no"]
     hashed_password = generate_password_hash(password)
 
-    # Security check for Admin & Security registration
+    # Security check for Admin, Security, & Mentor registration
     if role == "Admin":
         auth_code = request.form.get("auth_code")
         if auth_code != "adminpass123":
@@ -45,6 +45,11 @@ def register():
     elif role == "Security":
         auth_code = request.form.get("auth_code")
         if auth_code != "securitypass123":
+            flash("Invalid security authorization key.", "error")
+            return redirect(url_for("home"))
+    elif role == "Mentor":
+        auth_code = request.form.get("auth_code")
+        if auth_code != "mentorpass123":
             flash("Invalid security authorization key.", "error")
             return redirect(url_for("home"))
 
@@ -113,7 +118,7 @@ def login():
     email = request.form["email"]
     password = request.form["password"]
 
-    # Authorization code check for Admin & Security login
+    # Authorization code check for Admin, Security, & Mentor login
     if role == "Admin":
         auth_code = request.form.get("auth_code")
         if auth_code != "adminpass123":
@@ -122,6 +127,11 @@ def login():
     elif role == "Security":
         auth_code = request.form.get("auth_code")
         if auth_code != "securitypass123":
+            flash("Invalid security authorization key.", "error")
+            return redirect(url_for("home"))
+    elif role == "Mentor":
+        auth_code = request.form.get("auth_code")
+        if auth_code != "mentorpass123":
             flash("Invalid security authorization key.", "error")
             return redirect(url_for("home"))
 
@@ -155,6 +165,7 @@ def login():
                 session["mentor_username"] = user["name"]
                 session["phone_no"] = user["phone_no"]
                 session["mentor_phone"] = user["phone_no"]
+                session["security_key"] = auth_code
                 flash("Mentor login successful.", "success")
                 return redirect(url_for("mentor_dashboard"))
                 
