@@ -76,6 +76,18 @@ If you made changes that affect your database structure (like adding a new table
 
 ---
 
+## 🔮 Future Roadmap & Potential Updates
+
+Here are some features you can build next to improve the system:
+
+1. **QR Code Scanning**: Generate a unique QR code for approved outpasses. The security guard can scan it using a camera to mark the student "Exited" automatically.
+2. **Notifications System**: Set up automated Email/SMS messages to parents when an outpass is approved or when the student exits the campus.
+3. **Return Gate Tracking**: Track return timestamps to measure the exact duration a student has been outside campus.
+4. **Interactive Analytics**: Use a library like `Chart.js` on the Admin Dashboard to visualize outpass trends, department metrics, and peak hours.
+5. **Self-Service Reset**: Allow students and mentors to reset their passwords and update their profile details securely.
+
+---
+
 ## 💻 Tech Stack & Features
 
 * **Backend**: Python 3 / Flask Micro-framework
