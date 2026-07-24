@@ -80,6 +80,12 @@
         <label for="authPassword">Password</label>
         <input type="password" name="password" id="authPassword" placeholder="••••••••" required style="margin-bottom: 10px;">
 
+        <!-- Confirm Password Field (shown only during registration) -->
+        <div id="confirmPasswordGroup" class="form-group" style="display: none;">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" name="confirm_password" id="confirmPassword" placeholder="••••••••" style="margin-bottom: 10px;">
+        </div>
+
         <button type="submit" id="submitBtn" class="btn full" style="margin-top: 25px;">Sign In</button>
     </form>
 </div>
@@ -94,6 +100,8 @@ function switchForm(mode) {
     const regNameInput = document.getElementById('regName');
     const phoneGroup = document.getElementById('registerPhoneGroup');
     const regPhoneInput = document.getElementById('regPhone');
+    const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
 
     if (mode === 'login') {
         authForm.action = "{{ url_for('login') }}";
@@ -104,6 +112,8 @@ function switchForm(mode) {
         regNameInput.removeAttribute('required');
         phoneGroup.style.display = 'none';
         regPhoneInput.removeAttribute('required');
+        confirmPasswordGroup.style.display = 'none';
+        confirmPasswordInput.removeAttribute('required');
     } else {
         authForm.action = "{{ url_for('register') }}";
         submitBtn.textContent = 'Create Account';
@@ -113,9 +123,24 @@ function switchForm(mode) {
         regNameInput.setAttribute('required', 'required');
         phoneGroup.style.display = 'block';
         regPhoneInput.setAttribute('required', 'required');
+        confirmPasswordGroup.style.display = 'block';
+        confirmPasswordInput.setAttribute('required', 'required');
     }
     handleRoleChange();
 }
+
+document.getElementById('authForm').addEventListener('submit', function(e) {
+    const registerTab = document.getElementById('registerTab');
+    if (registerTab.classList.contains('active')) {
+        const password = document.getElementById('authPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            alert('Passwords do not match. Please re-enter your password.');
+            return false;
+        }
+    }
+});
 
 function handleRoleChange() {
     const roleSelect = document.getElementById('roleSelect');

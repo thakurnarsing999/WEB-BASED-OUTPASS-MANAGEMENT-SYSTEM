@@ -36,6 +36,22 @@ To register or log in as a staff member (Admin, Mentor, or Security Guard), you 
 
 ---
 
+## ✉️ Email OTP Verification Setup (SMTP Configuration)
+
+Registration requires 6-digit Email OTP verification to confirm email addresses exist before account creation.
+
+### How to configure SMTP Credentials for Real Email Delivery:
+To send actual OTP codes to user email inboxes:
+1. Go to your Google Account -> **Security** -> Enable **2-Step Verification**.
+2. Search for **App Passwords** in your Google Account and generate a 16-character password for "Mail".
+3. Add these environment variables to Vercel (or your local environment):
+   - `SMTP_EMAIL`: `yourgmailaddress@gmail.com`
+   - `SMTP_PASSWORD`: `xxxx xxxx xxxx xxxx` (16-char App Password)
+   - `SMTP_SERVER`: `smtp.gmail.com` (default)
+   - `SMTP_PORT`: `587` (default)
+
+*Note: If SMTP credentials are not configured, the system logs the 6-digit OTP directly to the server terminal output as a testing fallback.*
+
 ## 🔄 How to Make & Deploy Changes
 
 Whenever you want to modify your website, update a feature, or change any style in the future, follow this simple 4-step workflow:

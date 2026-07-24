@@ -4,9 +4,59 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import random
 import os
 import datetime
+import time
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "outpass_secret_key")
+
+
+def send_otp_email(recipient_email, otp_code, recipient_name="User"):
+    smtp_server = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
+    smtp_port = int(os.environ.get("SMTP_PORT", 587))
+    smtp_email = os.environ.get("SMTP_EMAIL", "")
+    smtp_password = os.environ.get("SMTP_PASSWORD", "")
+
+    if not smtp_email or not smtp_password:
+        print(f"\n[SECURITY OTP NOTICE] SMTP credentials not set in env. OTP for {recipient_email} is: {otp_code}\n")
+        return False, "SMTP credentials not configured."
+
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = f"Your Outpass Security Verification Code: {otp_code}"
+        msg["From"] = f"Outpass Management System <{smtp_email}>"
+        msg["To"] = recipient_email
+
+        html_content = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; background-color: #0f172a; color: #f8fafc; padding: 20px;">
+            <div style="max-width: 500px; margin: 0 auto; background: #1e293b; border-radius: 12px; padding: 30px; border: 1px solid #334155;">
+                <h2 style="color: #818cf8; margin-top: 0;">Email Verification Required</h2>
+                <p>Hello <strong>{recipient_name}</strong>,</p>
+                <p>Thank you for registering on the <strong>Web-Based Out Pass Management System</strong>. Please enter the 6-digit verification code below to verify your email address and complete registration:</p>
+                <div style="background: #0f172a; border: 1px dashed #6366f1; padding: 15px; text-align: center; border-radius: 8px; margin: 20px 0;">
+                    <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #38bdf8; font-family: monospace;">{otp_code}</span>
+                </div>
+                <p style="font-size: 13px; color: #94a3b8;">This code will expire in 10 minutes. If you did not request this registration, please ignore this email.</p>
+            </div>
+        </body>
+        </html>
+        """
+        msg.attach(MIMEText(html_content, "html"))
+
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(smtp_email, smtp_password)
+        server.sendmail(smtp_email, recipient_email, msg.as_string())
+        server.quit()
+        return True, "OTP sent successfully."
+    except Exception as e:
+        print(f"\n[SMTP ERROR] Failed to send OTP email: {e}")
+        print(f"[SECURITY OTP FALLBACK] Generated OTP for {recipient_email} is: {otp_code}\n")
+        return False, str(e)
+
 
 DB_CONFIG = {
     "host": os.environ.get("MYSQLHOST", "127.0.0.1"),  # localhost
@@ -33,8 +83,12 @@ def register():
     name = request.form["name"]
     email = request.form["email"]
     password = request.form["password"]
+    confirm_password = request.form.get("confirm_password")
     phone_no = request.form["phone_no"]
-    hashed_password = generate_password_hash(password)
+
+    if confirm_password and password != confirm_password:
+        flash("Passwords do not match. Please re-enter your password.", "error")
+        return redirect(url_for("home"))
 
     # Security check for Admin, Security, & Mentor registration
     if role == "Admin":
@@ -53,62 +107,162 @@ def register():
             flash("Invalid security authorization key.", "error")
             return redirect(url_for("home"))
 
+    # Pre-check if email or unique ID already exists in DB
     conn = None
     cursor = None
     try:
         conn = get_db_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
 
         if role == "Student":
-            roll_no = request.form["roll_no"]
-            department = request.form.get("department", "CSE")
-            year = request.form.get("year", "1st Year")
-            query = """
-                INSERT INTO students (name, roll_no, email, password, phone_no, department, year)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """
-            cursor.execute(query, (name, roll_no, email, hashed_password, phone_no, department, year))
-            conn.commit()
-            flash("Student registration successful. Please login.", "success")
-            
+            roll_no = request.form.get("roll_no", "")
+            cursor.execute("SELECT student_id FROM students WHERE email = %s OR roll_no = %s", (email, roll_no))
+            if cursor.fetchone():
+                flash("Email or Roll Number is already registered.", "error")
+                return redirect(url_for("home"))
         elif role == "Mentor":
-            staff_id = request.form["staff_id"]
-            query = """
-                INSERT INTO mentors (name, email, password, staff_id, phone_no)
-                VALUES (%s, %s, %s, %s, %s)
-            """
-            cursor.execute(query, (name, email, hashed_password, staff_id, phone_no))
-            conn.commit()
-            flash("Mentor registration successful. Please login.", "success")
-            
+            staff_id = request.form.get("staff_id", "")
+            cursor.execute("SELECT mentor_id FROM mentors WHERE email = %s OR staff_id = %s", (email, staff_id))
+            if cursor.fetchone():
+                flash("Email or Staff ID is already registered.", "error")
+                return redirect(url_for("home"))
         elif role == "Security":
-            query = """
-                INSERT INTO security_users (name, email, password, phone_no)
-                VALUES (%s, %s, %s, %s)
-            """
-            cursor.execute(query, (name, email, hashed_password, phone_no))
-            conn.commit()
-            flash("Security guard registration successful. Please login.", "success")
-            
+            cursor.execute("SELECT security_id FROM security_users WHERE email = %s", (email,))
+            if cursor.fetchone():
+                flash("Email is already registered.", "error")
+                return redirect(url_for("home"))
         elif role == "Admin":
-            query = """
-                INSERT INTO admins (name, email, password, phone_no)
-                VALUES (%s, %s, %s, %s)
-            """
-            cursor.execute(query, (name, email, hashed_password, phone_no))
-            conn.commit()
-            flash("Admin registration successful. Please login.", "success")
-
-    except mysql.connector.IntegrityError:
-        flash("Email, Roll No, or Staff ID already exists.", "error")
+            cursor.execute("SELECT admin_id FROM admins WHERE email = %s", (email,))
+            if cursor.fetchone():
+                flash("Email is already registered.", "error")
+                return redirect(url_for("home"))
     except Exception as e:
         flash(f"Database error: {e}", "error")
+        return redirect(url_for("home"))
     finally:
         if cursor:
             cursor.close()
         if conn:
             conn.close()
 
+    # Generate 6-digit OTP and store pending registration state in session
+    otp_code = str(random.randint(100000, 999999))
+    session["pending_registration"] = {
+        "role": role,
+        "name": name,
+        "email": email,
+        "password": password,
+        "phone_no": phone_no,
+        "roll_no": request.form.get("roll_no", ""),
+        "department": request.form.get("department", "CSE"),
+        "year": request.form.get("year", "1st Year"),
+        "staff_id": request.form.get("staff_id", ""),
+        "otp": otp_code,
+        "expires_at": time.time() + 600
+    }
+
+    send_otp_email(email, otp_code, name)
+    flash(f"A 6-digit OTP verification code has been sent to {email}.", "info")
+    return redirect(url_for("verify_otp"))
+
+
+@app.route("/verify_otp", methods=["GET", "POST"])
+def verify_otp():
+    pending = session.get("pending_registration")
+    if not pending:
+        flash("No pending registration session found. Please register.", "error")
+        return redirect(url_for("home"))
+
+    if request.method == "POST":
+        user_otp = request.form.get("otp_code", "").strip()
+
+        if time.time() > pending.get("expires_at", 0):
+            flash("OTP code has expired. Please request a new code.", "error")
+            return render_template("verify_otp.html", pending_email=pending["email"], pending_role=pending["role"])
+
+        if user_otp != pending.get("otp"):
+            flash("Invalid OTP code. Please check your email and try again.", "error")
+            return render_template("verify_otp.html", pending_email=pending["email"], pending_role=pending["role"])
+
+        # OTP is verified! Insert user into database
+        role = pending["role"]
+        name = pending["name"]
+        email = pending["email"]
+        hashed_password = generate_password_hash(pending["password"])
+        phone_no = pending["phone_no"]
+
+        conn = None
+        cursor = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            if role == "Student":
+                query = """
+                    INSERT INTO students (name, roll_no, email, password, phone_no, department, year)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """
+                cursor.execute(query, (name, pending["roll_no"], email, hashed_password, phone_no, pending["department"], pending["year"]))
+            elif role == "Mentor":
+                query = """
+                    INSERT INTO mentors (name, email, password, staff_id, phone_no)
+                    VALUES (%s, %s, %s, %s, %s)
+                """
+                cursor.execute(query, (name, email, hashed_password, pending["staff_id"], phone_no))
+            elif role == "Security":
+                query = """
+                    INSERT INTO security_users (name, email, password, phone_no)
+                    VALUES (%s, %s, %s, %s)
+                """
+                cursor.execute(query, (name, email, hashed_password, phone_no))
+            elif role == "Admin":
+                query = """
+                    INSERT INTO admins (name, email, password, phone_no)
+                    VALUES (%s, %s, %s, %s)
+                """
+                cursor.execute(query, (name, email, hashed_password, phone_no))
+
+            conn.commit()
+            session.pop("pending_registration", None)
+            flash(f"{role} registration successful! Email verified. Please sign in.", "success")
+            return redirect(url_for("home"))
+        except mysql.connector.IntegrityError:
+            session.pop("pending_registration", None)
+            flash("Email, Roll No, or Staff ID already exists.", "error")
+            return redirect(url_for("home"))
+        except Exception as e:
+            flash(f"Database error: {e}", "error")
+            return render_template("verify_otp.html", pending_email=pending["email"], pending_role=pending["role"])
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    return render_template("verify_otp.html", pending_email=pending["email"], pending_role=pending["role"])
+
+
+@app.route("/resend_otp", methods=["POST"])
+def resend_otp():
+    pending = session.get("pending_registration")
+    if not pending:
+        flash("No pending registration session found.", "error")
+        return redirect(url_for("home"))
+
+    new_otp = str(random.randint(100000, 999999))
+    pending["otp"] = new_otp
+    pending["expires_at"] = time.time() + 600
+    session["pending_registration"] = pending
+
+    send_otp_email(pending["email"], new_otp, pending["name"])
+    flash(f"A new 6-digit OTP code has been sent to {pending['email']}.", "info")
+    return redirect(url_for("verify_otp"))
+
+
+@app.route("/cancel_registration", methods=["POST"])
+def cancel_registration():
+    session.pop("pending_registration", None)
+    flash("Registration cancelled.", "info")
     return redirect(url_for("home"))
 
 
@@ -137,7 +291,6 @@ def login():
 
     conn = None
     cursor = None
-    user = None
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
@@ -146,58 +299,81 @@ def login():
             query = "SELECT * FROM students WHERE email = %s OR roll_no = %s"
             cursor.execute(query, (email, email))
             user = cursor.fetchone()
-            if user and check_password_hash(user["password"], password):
-                session.clear()
-                session["student_id"] = user["student_id"]
-                session["student_name"] = user["name"]
-                session["phone_no"] = user["phone_no"]
-                session["student_phone"] = user["phone_no"]
-                flash("Student login successful.", "success")
-                return redirect(url_for("student_dashboard"))
+            if not user:
+                flash("No student account found with this email or roll number.", "error")
+                return redirect(url_for("home"))
+            if not check_password_hash(user["password"], password):
+                flash("Incorrect password for this student account.", "error")
+                return redirect(url_for("home"))
+
+            session.clear()
+            session["student_id"] = user["student_id"]
+            session["student_name"] = user["name"]
+            session["phone_no"] = user["phone_no"]
+            session["student_phone"] = user["phone_no"]
+            flash("Student login successful.", "success")
+            return redirect(url_for("student_dashboard"))
                 
         elif role == "Mentor":
             query = "SELECT * FROM mentors WHERE email = %s OR staff_id = %s"
             cursor.execute(query, (email, email))
             user = cursor.fetchone()
-            if user and check_password_hash(user["password"], password):
-                session.clear()
-                session["mentor_id"] = user["mentor_id"]
-                session["mentor_username"] = user["name"]
-                session["phone_no"] = user["phone_no"]
-                session["mentor_phone"] = user["phone_no"]
-                session["security_key"] = auth_code
-                flash("Mentor login successful.", "success")
-                return redirect(url_for("mentor_dashboard"))
+            if not user:
+                flash("No mentor account found with this email or staff ID.", "error")
+                return redirect(url_for("home"))
+            if not check_password_hash(user["password"], password):
+                flash("Incorrect password for this mentor account.", "error")
+                return redirect(url_for("home"))
+
+            session.clear()
+            session["mentor_id"] = user["mentor_id"]
+            session["mentor_username"] = user["name"]
+            session["phone_no"] = user["phone_no"]
+            session["mentor_phone"] = user["phone_no"]
+            session["security_key"] = auth_code
+            flash("Mentor login successful.", "success")
+            return redirect(url_for("mentor_dashboard"))
                 
         elif role == "Security":
             query = "SELECT * FROM security_users WHERE email = %s"
             cursor.execute(query, (email,))
             user = cursor.fetchone()
-            if user and check_password_hash(user["password"], password):
-                session.clear()
-                session["security_id"] = user["security_id"]
-                session["security_username"] = user["name"]
-                session["phone_no"] = user["phone_no"]
-                session["security_phone"] = user["phone_no"]
-                session["security_key"] = auth_code
-                flash("Security login successful.", "success")
-                return redirect(url_for("security_dashboard"))
+            if not user:
+                flash("No security guard account found with this email address.", "error")
+                return redirect(url_for("home"))
+            if not check_password_hash(user["password"], password):
+                flash("Incorrect password for this security account.", "error")
+                return redirect(url_for("home"))
+
+            session.clear()
+            session["security_id"] = user["security_id"]
+            session["security_username"] = user["name"]
+            session["phone_no"] = user["phone_no"]
+            session["security_phone"] = user["phone_no"]
+            session["security_key"] = auth_code
+            flash("Security login successful.", "success")
+            return redirect(url_for("security_dashboard"))
                 
         elif role == "Admin":
             query = "SELECT * FROM admins WHERE email = %s"
             cursor.execute(query, (email,))
             user = cursor.fetchone()
-            if user and check_password_hash(user["password"], password):
-                session.clear()
-                session["admin_id"] = user["admin_id"]
-                session["admin_username"] = user["name"]
-                session["phone_no"] = user["phone_no"]
-                session["admin_phone"] = user["phone_no"]
-                session["security_key"] = auth_code
-                flash("Admin login successful.", "success")
-                return redirect(url_for("admin_dashboard"))
-                
-        flash("Invalid credentials for selected role.", "error")
+            if not user:
+                flash("No admin account found with this email address.", "error")
+                return redirect(url_for("home"))
+            if not check_password_hash(user["password"], password):
+                flash("Incorrect password for this admin account.", "error")
+                return redirect(url_for("home"))
+
+            session.clear()
+            session["admin_id"] = user["admin_id"]
+            session["admin_username"] = user["name"]
+            session["phone_no"] = user["phone_no"]
+            session["admin_phone"] = user["phone_no"]
+            session["security_key"] = auth_code
+            flash("Admin login successful.", "success")
+            return redirect(url_for("admin_dashboard"))
+
     except Exception as e:
         flash(f"Database error: {e}", "error")
     finally:
