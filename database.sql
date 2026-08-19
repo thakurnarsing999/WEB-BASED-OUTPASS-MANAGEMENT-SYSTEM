@@ -1,15 +1,19 @@
-CREATE DATABASE IF NOT EXISTS outpass_system;
-USE outpass_system;
+-- ==========================================================
+-- WEB-BASED OUTPASS MANAGEMENT SYSTEM
+-- PostgreSQL Schema (Compatible with Supabase SQL Editor)
+-- ==========================================================
 
-DROP TABLE IF EXISTS security_logs;
-DROP TABLE IF EXISTS outpass_requests;
-DROP TABLE IF EXISTS students;
-DROP TABLE IF EXISTS admins;
-DROP TABLE IF EXISTS mentors;
-DROP TABLE IF EXISTS security_users;
+-- 1. Drop existing tables if they exist
+DROP TABLE IF EXISTS security_logs CASCADE;
+DROP TABLE IF EXISTS outpass_requests CASCADE;
+DROP TABLE IF EXISTS students CASCADE;
+DROP TABLE IF EXISTS admins CASCADE;
+DROP TABLE IF EXISTS mentors CASCADE;
+DROP TABLE IF EXISTS security_users CASCADE;
 
+-- 2. Create Students Table
 CREATE TABLE students (
-    student_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     roll_no VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
@@ -19,16 +23,18 @@ CREATE TABLE students (
     year VARCHAR(50) DEFAULT '1st Year'
 );
 
+-- 3. Create Admins Table
 CREATE TABLE admins (
-    admin_id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     phone_no VARCHAR(20) NOT NULL
 );
 
+-- 4. Create Mentors Table
 CREATE TABLE mentors (
-    mentor_id INT AUTO_INCREMENT PRIMARY KEY,
+    mentor_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
@@ -36,16 +42,18 @@ CREATE TABLE mentors (
     phone_no VARCHAR(20) NOT NULL
 );
 
+-- 5. Create Security Users Table
 CREATE TABLE security_users (
-    security_id INT AUTO_INCREMENT PRIMARY KEY,
+    security_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     phone_no VARCHAR(20) NOT NULL
 );
 
+-- 6. Create Outpass Requests Table
 CREATE TABLE outpass_requests (
-    request_id INT AUTO_INCREMENT PRIMARY KEY,
+    request_id SERIAL PRIMARY KEY,
     student_id INT NOT NULL,
     reason VARCHAR(255) NOT NULL,
     out_date DATE NOT NULL,
@@ -59,8 +67,9 @@ CREATE TABLE outpass_requests (
     FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE
 );
 
+-- 7. Create Security Exit Logs Table
 CREATE TABLE security_logs (
-    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    log_id SERIAL PRIMARY KEY,
     request_id INT NOT NULL,
     otp VARCHAR(10) NOT NULL,
     verification_status VARCHAR(50) NOT NULL,
@@ -68,7 +77,12 @@ CREATE TABLE security_logs (
     FOREIGN KEY (request_id) REFERENCES outpass_requests(request_id) ON DELETE CASCADE
 );
 
--- Seed values with phone_no and pre-calculated hashes (for 'admin123', 'mentor123', 'security123')
+-- ==========================================================
+-- 8. Seed Default Accounts (Passwords pre-hashed with scrypt)
+-- Admin: admin@outpass.com / admin123
+-- Mentor: mentor@outpass.com / mentor123
+-- Security: security@outpass.com / security123
+-- ==========================================================
 INSERT INTO admins (name, email, password, phone_no)
 VALUES ('Admin User', 'admin@outpass.com', 'scrypt:32768:8:1$WE67O2NFaCtgqnAO$86de032ca9f46b08582ad5f12c68719c6820640bb6830a607fad83935e7750755ad16029b985fc02023127c6540d2ee521c21eeb62be0ef9bfd3afccf3d08247', '9999999999');
 

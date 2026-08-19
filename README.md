@@ -7,7 +7,7 @@ A digital outpass management portal featuring a premium glassmorphic interface, 
 ## 🌐 Live Deployments
 
 * **Live Website URL**: [https://web-based-outpass-management-system.vercel.app/](https://web-based-outpass-management-system.vercel.app/)
-* **Cloud Database Host**: `tokaido.proxy.rlwy.net` (Port: `16493`)
+* **Cloud Database**: Hosted on **Supabase** (PostgreSQL)
 
 ---
 
@@ -36,21 +36,23 @@ To register or log in as a staff member (Admin, Mentor, or Security Guard), you 
 
 ---
 
-## ✉️ Email OTP Verification Setup (SMTP Configuration)
+## ⚡ Supabase Database Setup & Configuration
 
-Registration requires 6-digit Email OTP verification to confirm email addresses exist before account creation.
+This project uses **PostgreSQL** hosted on **Supabase**.
 
-### How to configure SMTP Credentials for Real Email Delivery:
-To send actual OTP codes to user email inboxes:
-1. Go to your Google Account -> **Security** -> Enable **2-Step Verification**.
-2. Search for **App Passwords** in your Google Account and generate a 16-character password for "Mail".
-3. Add these environment variables to Vercel (or your local environment):
-   - `SMTP_EMAIL`: `yourgmailaddress@gmail.com`
-   - `SMTP_PASSWORD`: `xxxx xxxx xxxx xxxx` (16-char App Password)
-   - `SMTP_SERVER`: `smtp.gmail.com` (default)
-   - `SMTP_PORT`: `587` (default)
+### 1. Create Tables in Supabase:
+1. Open your project on **[Supabase.com](https://supabase.com)**.
+2. In the left sidebar, click on **SQL Editor**.
+3. Open the file [`database.sql`](database.sql) in this repository, copy all contents, paste them into the Supabase SQL editor, and click **Run**.
 
-*Note: If SMTP credentials are not configured, the system logs the 6-digit OTP directly to the server terminal output as a testing fallback.*
+### 2. Connect Your App (Environment Variables):
+Under **Project Settings** -> **Database** in Supabase, copy your connection string or URI.
+Add the variable in **Vercel** (or in your local `.env`):
+* `DATABASE_URL`: `postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres` (or Direct Connection URI)
+
+*(Alternatively, you can provide separate variables: `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`).*
+
+---
 
 ## 🔄 How to Make & Deploy Changes
 
@@ -88,7 +90,7 @@ git push origin main
 
 ### ⚠️ Special Step: If you modified the Database (SQL)
 If you made changes that affect your database structure (like adding a new table or column in `database.sql`):
-* Connect to your Railway public host (using MySQL Workbench) and execute the matching `ALTER` or `CREATE` SQL query so the cloud database has the new fields.
+* Open the **SQL Editor** in your Supabase dashboard and execute the matching `ALTER` or `CREATE` SQL query so the cloud database has the new fields.
 
 ---
 
@@ -108,16 +110,16 @@ Here are some features you can build next to improve the system:
 
 * **Backend**: Python 3 / Flask Micro-framework
 * **Security**: `werkzeug.security` (salted scrypt password hashing and validation)
-* **Database**: MySQL (hosted on Railway)
+* **Database**: PostgreSQL (hosted on Supabase) via `psycopg2-binary`
 * **Session Handling**: Role-appropriate dynamic Flask sessions with encrypted cookie state
 * **Frontend**: HTML5, CSS3 Custom Theme (obsidian dark mode, frosted backdrop blurs, responsive tables, single-line data grids), client-side dynamic JavaScript form toggles.
-* **Hosting**: Vercel (web hosting), Railway (database hosting)
+* **Hosting**: Vercel (web hosting), Supabase (PostgreSQL database hosting)
 
 ---
 
 ## 📂 Project Structure
 * `app.py` - Core application logic and API routes.
-* `database.sql` - Complete database schema DDL and seed values.
+* `database.sql` - Complete PostgreSQL database schema DDL and seed values.
 * `static/style.css` - Custom styling theme.
 * `static/script.js` - Client-side verification popups.
 * `templates/` - HTML layout views for base structure, forms, and dashboards.
