@@ -1,4 +1,7 @@
 __pycache__/
 *.pyc
 .env
+.env.*
+SECRETS.md
+private_keys.md
 .vscode/

@@ -1,125 +1,107 @@
 # Web-Based Out Pass Management System
 
-A digital outpass management portal featuring a premium glassmorphic interface, dynamic role-based routes, and secure database integrations.
+A digital outpass management platform built with **Python (Flask)** and **PostgreSQL (Supabase)**, featuring a modern glassmorphic interface, role-based workflows, and automated gate verification logs.
 
 ---
 
-## 🌐 Live Deployments
+## 🌐 Live Deployment
 
-* **Live Website URL**: [https://web-based-outpass-management-system.vercel.app/](https://web-based-outpass-management-system.vercel.app/)
-* **Cloud Database**: Hosted on **Supabase** (PostgreSQL)
-
----
-
-## 🔑 Pre-Seeded Accounts & Authorization Keys
-
-To register or log in as a staff member (Admin, Mentor, or Security Guard), you must provide the role's corresponding **Security Authorization Key**.
-
-### 1. Global Role Authorization Keys
-* **Admin Key**: `adminpass123`
-* **Security Key**: `securitypass123`
-* **Mentor Key**: `mentorpass123`
-
-### 2. Seeded Login Accounts (For Instant Testing)
-* **Root Administrator**:
-  * **Email ID**: `admin@outpass.com`
-  * **Password**: `admin123`
-  * **Security Key**: `adminpass123`
-* **Default Mentor**:
-  * **Email ID**: `mentor@outpass.com`
-  * **Password**: `mentor123`
-  * **Security Key**: `mentorpass123`
-* **Default Security Guard**:
-  * **Email ID**: `security@outpass.com`
-  * **Password**: `security123`
-  * **Security Key**: `securitypass123`
+* **Live Web Application**: [https://web-based-outpass-management-system.vercel.app/](https://web-based-outpass-management-system.vercel.app/)
+* **Cloud Database Infrastructure**: Hosted on **Supabase** (PostgreSQL)
 
 ---
 
-## ⚡ Supabase Database Setup & Configuration
+## ✨ System Features & User Roles
 
-This project uses **PostgreSQL** hosted on **Supabase**.
+The platform provides dedicated, role-segregated portals:
 
-### 1. Create Tables in Supabase:
-1. Open your project on **[Supabase.com](https://supabase.com)**.
-2. In the left sidebar, click on **SQL Editor**.
-3. Open the file [`database.sql`](database.sql) in this repository, copy all contents, paste them into the Supabase SQL editor, and click **Run**.
+* **👨‍🎓 Student Portal**:
+  * Submit digital outpass requests with reasons, parent contact, and departure schedule.
+  * Real-time status tracking (Pending / Approved / Rejected / Exited).
+  * Auto-generated OTP visibility upon mentor approval.
 
-### 2. Connect Your App (Environment Variables):
-Under **Project Settings** -> **Database** in Supabase, copy your connection string or URI.
-Add the variable in **Vercel** (or in your local `.env`):
-* `DATABASE_URL`: `postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres` (or Direct Connection URI)
+* **👩‍🏫 Mentor / Faculty Portal**:
+  * Review, approve, or reject student outpasses with custom remarks.
+  * Live metrics for pending, approved, and total department applications.
 
-*(Alternatively, you can provide separate variables: `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`).*
+* **🛡️ Security Guard Terminal**:
+  * Secure gate-pass validation terminal.
+  * Validates OTP & departure date in real-time before allowing campus exit.
+  * Automatic exit logging with timestamps.
+
+* **⚙️ Administrator Command Center**:
+  * Global student registry oversight.
+  * System-wide audit log and movement analytics.
 
 ---
 
-## 🔄 How to Make & Deploy Changes
+## 💻 Tech Stack
 
-Whenever you want to modify your website, update a feature, or change any style in the future, follow this simple 4-step workflow:
+* **Backend**: Python 3, Flask Micro-framework, Werkzeug Security (Scrypt password encryption)
+* **Database**: PostgreSQL (Supabase) via `psycopg2-binary`
+* **Frontend**: HTML5, CSS3 (Obsidian Dark Glassmorphism, Responsive Tables), Vanilla JavaScript (ES6)
+* **Hosting & CI/CD**: Vercel (Web Hosting), Supabase (Database), GitHub (Version Control)
 
-### Step 1: Make your changes locally
-Open your project in **VS Code** and edit the files:
-* **Layout / HTML Text**: Edit the files inside the `templates/` folder.
-* **Colors / Spacing / Styles**: Edit `static/style.css`.
-* **Python Routes / Logic**: Edit `app.py`.
+---
 
-### Step 2: Test your changes locally on your PC
-Before pushing to the internet, make sure there are no errors on your local machine:
-1. Open Command Prompt inside your project folder.
-2. Start the local server:
-   ```cmd
-   python app.py
-   ```
-3. Open `http://127.0.0.1:5000/` in your browser and verify that everything looks and functions correctly.
-4. Press `Ctrl + C` in the command prompt to stop the server when you are done testing.
+## 🚀 Local Development Setup
 
-### Step 3: Commit your changes to Git
-Once your changes are working perfectly on your local machine, save them to your local Git history. Open your terminal and run:
+### 1. Clone the Repository:
+```bash
+git clone https://github.com/thakurnarsing999/WEB-BASED-OUTPASS-MANAGEMENT-SYSTEM.git
+cd WEB-BASED-OUTPASS-MANAGEMENT-SYSTEM
+```
+
+### 2. Install Dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Configure Environment Variables:
+Create a `.env` file in the root directory (this file is ignored by git for security):
+```env
+DATABASE_URL=postgresql://postgres.[YOUR_PROJECT_REF]:[YOUR_PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres
+SECRET_KEY=your_custom_secret_key
+ADMIN_AUTH_KEY=your_admin_secret_key
+MENTOR_AUTH_KEY=your_mentor_secret_key
+SECURITY_AUTH_KEY=your_security_secret_key
+```
+
+### 4. Run the Application:
+```bash
+python app.py
+```
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
+
+---
+
+## 🔄 Deployment Workflow
+
+Whenever updates are made locally:
 ```bash
 git add .
-git commit -m "Write a short summary of the changes you made"
-```
-
-### Step 4: Push to GitHub (This updates Vercel)
-Upload your committed code to the cloud:
-```bash
+git commit -m "Describe your changes"
 git push origin main
 ```
-*Note: Vercel will automatically detect the push, rebuild your application, and update the live website within 60 seconds.*
-
-### ⚠️ Special Step: If you modified the Database (SQL)
-If you made changes that affect your database structure (like adding a new table or column in `database.sql`):
-* Open the **SQL Editor** in your Supabase dashboard and execute the matching `ALTER` or `CREATE` SQL query so the cloud database has the new fields.
-
----
-
-## 🔮 Future Roadmap & Potential Updates
-
-Here are some features you can build next to improve the system:
-
-1. **QR Code Scanning**: Generate a unique QR code for approved outpasses. The security guard can scan it using a camera to mark the student "Exited" automatically.
-2. **Notifications System**: Set up automated Email/SMS messages to parents when an outpass is approved or when the student exits the campus.
-3. **Return Gate Tracking**: Track return timestamps to measure the exact duration a student has been outside campus.
-4. **Interactive Analytics**: Use a library like `Chart.js` on the Admin Dashboard to visualize outpass trends, department metrics, and peak hours.
-5. **Self-Service Reset**: Allow students and mentors to reset their passwords and update their profile details securely.
-
----
-
-## 💻 Tech Stack & Features
-
-* **Backend**: Python 3 / Flask Micro-framework
-* **Security**: `werkzeug.security` (salted scrypt password hashing and validation)
-* **Database**: PostgreSQL (hosted on Supabase) via `psycopg2-binary`
-* **Session Handling**: Role-appropriate dynamic Flask sessions with encrypted cookie state
-* **Frontend**: HTML5, CSS3 Custom Theme (obsidian dark mode, frosted backdrop blurs, responsive tables, single-line data grids), client-side dynamic JavaScript form toggles.
-* **Hosting**: Vercel (web hosting), Supabase (PostgreSQL database hosting)
+*Vercel automatically detects commits pushed to `main` and rebuilds the production application within 60 seconds.*
 
 ---
 
 ## 📂 Project Structure
-* `app.py` - Core application logic and API routes.
-* `database.sql` - Complete PostgreSQL database schema DDL and seed values.
-* `static/style.css` - Custom styling theme.
-* `static/script.js` - Client-side verification popups.
-* `templates/` - HTML layout views for base structure, forms, and dashboards.
+
+```text
+├── app.py                  # Application routes, authentication & business logic
+├── database.sql            # PostgreSQL schema definition and migrations
+├── requirements.txt        # Python package dependencies
+├── static/
+│   ├── style.css           # Glassmorphism styling and responsive layout
+│   └── script.js           # Client-side validation & confirmation popups
+└── templates/              # HTML layout views
+    ├── base.html           # Master navigation & container layout
+    ├── home.html           # Unified login & registration portal
+    ├── apply_outpass.html  # Outpass application form
+    ├── view_status.html    # Student request status history
+    ├── mentor_dashboard.html # Mentor approval dashboard
+    ├── security_dashboard.html # Gate verification terminal
+    └── admin_dashboard.html # Administrator registry & audit log
+```

@@ -26,6 +26,11 @@ def get_db_connection():
 
 
 
+ADMIN_AUTH_KEY = os.environ.get("ADMIN_AUTH_KEY", "adminpass123")
+MENTOR_AUTH_KEY = os.environ.get("MENTOR_AUTH_KEY", "mentorpass123")
+SECURITY_AUTH_KEY = os.environ.get("SECURITY_AUTH_KEY", "securitypass123")
+
+
 @app.route("/")
 def home():
     return render_template("home.html")
@@ -50,17 +55,17 @@ def register():
     # Security check for Admin, Security, & Mentor registration
     if role == "Admin":
         auth_code = request.form.get("auth_code")
-        if auth_code != "adminpass123":
+        if auth_code != ADMIN_AUTH_KEY:
             flash("Invalid security authorization key.", "error")
             return redirect(url_for("home"))
     elif role == "Security":
         auth_code = request.form.get("auth_code")
-        if auth_code != "securitypass123":
+        if auth_code != SECURITY_AUTH_KEY:
             flash("Invalid security authorization key.", "error")
             return redirect(url_for("home"))
     elif role == "Mentor":
         auth_code = request.form.get("auth_code")
-        if auth_code != "mentorpass123":
+        if auth_code != MENTOR_AUTH_KEY:
             flash("Invalid security authorization key.", "error")
             return redirect(url_for("home"))
 
@@ -132,17 +137,17 @@ def login():
     # Authorization code check for Admin, Security, & Mentor login
     if role == "Admin":
         auth_code = request.form.get("auth_code")
-        if auth_code != "adminpass123":
+        if auth_code != ADMIN_AUTH_KEY:
             flash("Invalid security authorization key.", "error")
             return redirect(url_for("home"))
     elif role == "Security":
         auth_code = request.form.get("auth_code")
-        if auth_code != "securitypass123":
+        if auth_code != SECURITY_AUTH_KEY:
             flash("Invalid security authorization key.", "error")
             return redirect(url_for("home"))
     elif role == "Mentor":
         auth_code = request.form.get("auth_code")
-        if auth_code != "mentorpass123":
+        if auth_code != MENTOR_AUTH_KEY:
             flash("Invalid security authorization key.", "error")
             return redirect(url_for("home"))
 
