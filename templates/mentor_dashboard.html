@@ -27,13 +27,13 @@
         <h4>Total Requests</h4>
         <div class="number">{{ total_count }}</div>
     </div>
-    <div class="metric-card" style="border-color: rgba(234, 179, 8, 0.2);">
+    <div class="metric-card">
         <h4>Pending Approval</h4>
-        <div class="number" style="color: var(--color-warning);">{{ pending_count.value }}</div>
+        <div class="number">{{ pending_count.value }}</div>
     </div>
-    <div class="metric-card" style="border-color: rgba(16, 185, 129, 0.2);">
+    <div class="metric-card">
         <h4>Approved / Exited</h4>
-        <div class="number" style="color: var(--color-success);">{{ approved_count.value }}</div>
+        <div class="number">{{ approved_count.value }}</div>
     </div>
 </div>
 
@@ -75,7 +75,7 @@
                     </span>
                 </td>
 
-                <td style="font-family: monospace; font-size: 14px; font-weight: bold; color: var(--accent-cyan);">
+                <td style="font-family: monospace; font-size: 14px; font-weight: bold; color: #ffffff;">
                     {% if req.otp %}
                         {{ req.otp }}
                     {% else %}
