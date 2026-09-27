@@ -2,136 +2,248 @@
 
 {% block content %}
 
-<!-- Hero description sentence removed as requested -->
-<section class="hero" style="padding: 40px 20px 20px 20px; background: transparent; border: none; box-shadow: none; margin-bottom: 20px;">
-    <h1 style="font-size: 36px; color: #ffffff; font-weight: 800; letter-spacing: -0.5px;">Web Based Out Pass Management System</h1>
-</section>
-
-<div class="form-box" style="max-width: 480px; margin: 0 auto 50px auto; text-align: left;">
-    <!-- Toggle Headers -->
-    <div class="tab-container" style="margin-bottom: 25px;">
-        <button type="button" id="loginTab" class="tab-button active" onclick="switchForm('login')" style="outline: none;">Sign In</button>
-        <button type="button" id="registerTab" class="tab-button" onclick="switchForm('register')" style="outline: none;">Register</button>
-    </div>
-
-    <!-- Unified Form -->
-    <form id="authForm" method="POST" action="{{ url_for('login') }}">
+<div class="auth-page-wrapper">
+    <div class="split-auth-card">
         
-        <!-- Role selector - ALWAYS FIRST as requested -->
-        <label for="roleSelect">Select Role</label>
-        <select name="role" id="roleSelect" onchange="handleRoleChange()" required style="margin-bottom: 5px;">
-            <option value="Student">Student</option>
-            <option value="Mentor">Mentor</option>
-            <option value="Security">Security Guard</option>
-            <option value="Admin">Administrator</option>
-        </select>
+        <!-- Left Side: Visual Art Showcase Panel (UISocial Style) -->
+        <div class="auth-visual-panel">
+            
+            <!-- Top Navigation on Left Art -->
+            <div class="visual-top-bar">
+                <span class="visual-brand-tag">Digital OutPass</span>
+                <div class="visual-nav-actions">
+                    <span class="visual-link" id="visualSignInLink" onclick="switchForm('login')">Sign In</span>
+                    <button type="button" class="visual-btn-pill" id="visualJoinBtn" onclick="switchForm('register')">Join Us</button>
+                </div>
+            </div>
 
-        <!-- Common Fields for Register (Name) -->
-        <div id="registerNameGroup" class="form-group" style="display: none;">
-            <label for="regName">Full Name</label>
-            <input type="text" name="name" id="regName" placeholder="Enter full name" style="margin-bottom: 5px;">
+            <!-- Bottom User / Feature Badge -->
+            <div class="visual-bottom-bar">
+                <div class="visual-user-info">
+                    <div class="visual-avatar">
+                        🛡️
+                    </div>
+                    <div class="visual-text-block">
+                        <h5>Smart OutPass System</h5>
+                        <span>Automated Gate Clearance</span>
+                    </div>
+                </div>
+                <div class="visual-nav-arrows">
+                    <div class="arrow-circle" title="Verified Campus System">←</div>
+                    <div class="arrow-circle" title="Encrypted Connection">→</div>
+                </div>
+            </div>
         </div>
 
-        <!-- Phone Number Field (shown only during registration) -->
-        <div id="registerPhoneGroup" class="form-group" style="display: none;">
-            <label for="regPhone">Phone Number</label>
-            <input type="tel" name="phone_no" id="regPhone" placeholder="Enter phone number" style="margin-bottom: 5px;">
+        <!-- Right Side: Login & Registration Form Panel -->
+        <div class="auth-form-panel">
+            
+            <!-- Top Logo Row -->
+            <div class="auth-header-row">
+                <div class="auth-brand-logo">OUTPASS<span>.io</span></div>
+                <div class="auth-badge-lang">
+                    <span>🛡️ Campus EN ⌄</span>
+                </div>
+            </div>
+
+            <!-- Greeting Title & Subtitle -->
+            <div class="auth-intro-block">
+                <h1 class="auth-intro-title" id="authTitle">Hi, Welcome</h1>
+                <p class="auth-intro-subtitle" id="authSubtitle">Welcome to Campus OutPass System</p>
+            </div>
+
+            <!-- Main Auth Form -->
+            <form id="authForm" method="POST" action="{{ url_for('login') }}">
+                
+                <!-- Role Selector -->
+                <div class="role-select-box">
+                    <label for="roleSelect">Select Account Role</label>
+                    <select name="role" id="roleSelect" class="role-select-input" onchange="handleRoleChange()" required>
+                        <option value="Student">Student Portal</option>
+                        <option value="Mentor">Mentor / Faculty</option>
+                        <option value="Security">Security Guard</option>
+                        <option value="Admin">Administrator</option>
+                    </select>
+                </div>
+
+                <div class="auth-fields-wrapper">
+                    
+                    <!-- Common Fields for Register (Full Name) -->
+                    <div id="registerNameGroup" class="auth-input-group" style="display: none;">
+                        <label for="regName">Full Name</label>
+                        <input type="text" name="name" id="regName" class="auth-control" placeholder="Enter your full name">
+                    </div>
+
+                    <!-- Phone Number Field (shown only during registration) -->
+                    <div id="registerPhoneGroup" class="auth-input-group" style="display: none;">
+                        <label for="regPhone">Phone Number</label>
+                        <input type="tel" name="phone_no" id="regPhone" class="auth-control" placeholder="Enter contact phone number">
+                    </div>
+
+                    <!-- Email ID / Roll No Field -->
+                    <div class="auth-input-group">
+                        <label for="authEmail" id="emailLabel">Email ID / Roll Number</label>
+                        <input type="text" name="email" id="authEmail" class="auth-control" placeholder="Enter email or roll number" required>
+                    </div>
+
+                    <!-- Student Extra Fields (Department & Year) -->
+                    <div id="studentExtraGroup" style="display: none;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
+                            <div class="auth-input-group">
+                                <label for="rollNo">Roll Number</label>
+                                <input type="text" name="roll_no" id="rollNo" class="auth-control" placeholder="e.g. 21B91A0501">
+                            </div>
+                            <div class="auth-input-group">
+                                <label for="studentDept">Department</label>
+                                <select name="department" id="studentDept" class="auth-control" style="cursor: pointer;">
+                                    <option value="CSE">CSE</option>
+                                    <option value="CSE-(AI/ML)">CSE-(AI/ML)</option>
+                                    <option value="CSE-(AI/DS)">CSE-(AI/DS)</option>
+                                    <option value="MECH">MECH</option>
+                                    <option value="CIVIL">CIVIL</option>
+                                    <option value="IT">IT</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="auth-input-group">
+                            <label for="studentYear">Academic Year</label>
+                            <select name="year" id="studentYear" class="auth-control" style="cursor: pointer;">
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Mentor Extra Field (Staff ID) -->
+                    <div id="mentorExtraGroup" class="auth-input-group" style="display: none;">
+                        <label for="staffId">Staff Identification ID</label>
+                        <input type="text" name="staff_id" id="staffId" class="auth-control" placeholder="Enter staff ID (e.g. MNT001)">
+                    </div>
+
+                    <!-- Security Authorization Code for Admin, Security & Mentors -->
+                    <div id="securityKeyGroup" class="auth-input-group" style="display: none;">
+                        <label for="authCode">Security Authorization Key</label>
+                        <input type="password" name="auth_code" id="authCode" class="auth-control" placeholder="Enter security registration key">
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="auth-input-group">
+                        <label for="authPassword">Password</label>
+                        <input type="password" name="password" id="authPassword" class="auth-control" placeholder="••••••••" required>
+                    </div>
+
+                    <!-- Confirm Password Field (shown only during registration) -->
+                    <div id="confirmPasswordGroup" class="auth-input-group" style="display: none;">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" name="confirm_password" id="confirmPassword" class="auth-control" placeholder="••••••••">
+                    </div>
+
+                </div>
+
+                <!-- Forgot Password Link -->
+                <div class="auth-forgot-link" id="forgotPasswordWrap">
+                    <a href="javascript:void(0)" onclick="alert('Please contact your administrator or mentor to reset your password.')">Forgot password ?</a>
+                </div>
+
+                <!-- Divider -->
+                <div class="auth-divider-line">
+                    <span>or</span>
+                </div>
+
+                <!-- Google / Official Campus Portal Info Pill -->
+                <div class="auth-google-style-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>Official University Portal Authorization</span>
+                </div>
+
+                <!-- Primary Submit Button -->
+                <button type="submit" id="submitBtn" class="auth-submit-btn">Login</button>
+            </form>
+
+            <!-- Mode Switch Caption -->
+            <p class="auth-toggle-caption" id="authToggleCaption">
+                Don't have an account? <a href="javascript:void(0)" onclick="switchForm('register')">Sign up</a>
+            </p>
+
+            <!-- Bottom Footer Links / Icons -->
+            <div class="auth-social-icons">
+                <a href="javascript:void(0)" class="auth-social-icon" title="University Administration">🏛️</a>
+                <a href="javascript:void(0)" class="auth-social-icon" title="Security Gate">🛡️</a>
+                <a href="javascript:void(0)" class="auth-social-icon" title="Campus Help Desk">📞</a>
+                <a href="javascript:void(0)" class="auth-social-icon" title="Portal Information">ℹ️</a>
+            </div>
+
         </div>
 
-        <label for="authEmail" id="emailLabel">Email ID / Username</label>
-        <input type="text" name="email" id="authEmail" placeholder="Enter email or roll no" required style="margin-bottom: 5px;">
-
-        <!-- Student Extra Fields -->
-        <div id="studentExtraGroup" class="form-group" style="display: none;">
-            <label for="rollNo">Roll Number</label>
-            <input type="text" name="roll_no" id="rollNo" placeholder="Enter roll number" style="margin-bottom: 5px;">
-
-            <label for="studentDept">Department</label>
-            <select name="department" id="studentDept" style="margin-bottom: 5px;">
-                <option value="CSE">CSE</option>
-                <option value="CSE-(AI/ML)">CSE-(AI/ML)</option>
-                <option value="CSE-(AI/DS)">CSE-(AI/DS)</option>
-                <option value="MECH">MECH</option>
-                <option value="CIVIL">CIVIL</option>
-                <option value="IT">IT</option>
-            </select>
-
-            <label for="studentYear">Year</label>
-            <select name="year" id="studentYear" style="margin-bottom: 5px;">
-                <option value="1st Year">1st Year</option>
-                <option value="2nd Year">2nd Year</option>
-                <option value="3rd Year">3rd Year</option>
-                <option value="4th Year">4th Year</option>
-            </select>
-        </div>
-
-        <!-- Mentor Extra Field -->
-        <div id="mentorExtraGroup" class="form-group" style="display: none;">
-            <label for="staffId">Staff ID</label>
-            <input type="text" name="staff_id" id="staffId" placeholder="Enter staff ID" style="margin-bottom: 5px;">
-        </div>
-
-        <!-- Security Authorization Code for Admin & Security Guards -->
-        <div id="securityKeyGroup" class="form-group" style="display: none;">
-            <label for="authCode">Security Authorization Key</label>
-            <input type="password" name="auth_code" id="authCode" placeholder="Enter registration key" style="margin-bottom: 5px;">
-        </div>
-
-        <label for="authPassword">Password</label>
-        <input type="password" name="password" id="authPassword" placeholder="••••••••" required style="margin-bottom: 10px;">
-
-        <!-- Confirm Password Field (shown only during registration) -->
-        <div id="confirmPasswordGroup" class="form-group" style="display: none;">
-            <label for="confirmPassword">Confirm Password</label>
-            <input type="password" name="confirm_password" id="confirmPassword" placeholder="••••••••" style="margin-bottom: 10px;">
-        </div>
-
-        <button type="submit" id="submitBtn" class="btn full" style="margin-top: 25px;">Sign In</button>
-    </form>
+    </div>
 </div>
 
 <script>
 function switchForm(mode) {
     const authForm = document.getElementById('authForm');
     const submitBtn = document.getElementById('submitBtn');
-    const loginTab = document.getElementById('loginTab');
-    const registerTab = document.getElementById('registerTab');
+    const authTitle = document.getElementById('authTitle');
+    const authSubtitle = document.getElementById('authSubtitle');
+    const authToggleCaption = document.getElementById('authToggleCaption');
+    const forgotPasswordWrap = document.getElementById('forgotPasswordWrap');
+    
     const nameGroup = document.getElementById('registerNameGroup');
     const regNameInput = document.getElementById('regName');
     const phoneGroup = document.getElementById('registerPhoneGroup');
     const regPhoneInput = document.getElementById('regPhone');
     const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
     const confirmPasswordInput = document.getElementById('confirmPassword');
+    
+    const visualJoinBtn = document.getElementById('visualJoinBtn');
 
     if (mode === 'login') {
         authForm.action = "{{ url_for('login') }}";
-        submitBtn.textContent = 'Sign In';
-        loginTab.classList.add('active');
-        registerTab.classList.remove('active');
+        submitBtn.textContent = 'Login';
+        authTitle.textContent = 'Hi, Welcome';
+        authSubtitle.textContent = 'Welcome to Campus OutPass System';
+        authToggleCaption.innerHTML = 'Don\'t have an account? <a href="javascript:void(0)" onclick="switchForm(\'register\')">Sign up</a>';
+        forgotPasswordWrap.style.display = 'block';
+        
         nameGroup.style.display = 'none';
         regNameInput.removeAttribute('required');
         phoneGroup.style.display = 'none';
         regPhoneInput.removeAttribute('required');
         confirmPasswordGroup.style.display = 'none';
         confirmPasswordInput.removeAttribute('required');
+
+        if (visualJoinBtn) {
+            visualJoinBtn.textContent = 'Join Us';
+            visualJoinBtn.setAttribute('onclick', "switchForm('register')");
+        }
     } else {
         authForm.action = "{{ url_for('register') }}";
         submitBtn.textContent = 'Create Account';
-        loginTab.classList.remove('active');
-        registerTab.classList.add('active');
+        authTitle.textContent = 'Create Account';
+        authSubtitle.textContent = 'Register for Campus OutPass Portal';
+        authToggleCaption.innerHTML = 'Already have an account? <a href="javascript:void(0)" onclick="switchForm(\'login\')">Sign in</a>';
+        forgotPasswordWrap.style.display = 'none';
+        
         nameGroup.style.display = 'block';
         regNameInput.setAttribute('required', 'required');
         phoneGroup.style.display = 'block';
         regPhoneInput.setAttribute('required', 'required');
         confirmPasswordGroup.style.display = 'block';
         confirmPasswordInput.setAttribute('required', 'required');
+
+        if (visualJoinBtn) {
+            visualJoinBtn.textContent = 'Sign In';
+            visualJoinBtn.setAttribute('onclick', "switchForm('login')");
+        }
     }
     handleRoleChange();
 }
 
 document.getElementById('authForm').addEventListener('submit', function(e) {
-    const registerTab = document.getElementById('registerTab');
-    if (registerTab.classList.contains('active')) {
+    const isRegister = document.getElementById('submitBtn').textContent === 'Create Account';
+    if (isRegister) {
         const password = document.getElementById('authPassword').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
         if (password !== confirmPassword) {
@@ -144,8 +256,7 @@ document.getElementById('authForm').addEventListener('submit', function(e) {
 
 function handleRoleChange() {
     const roleSelect = document.getElementById('roleSelect');
-    const registerTab = document.getElementById('registerTab');
-    const isRegister = registerTab.classList.contains('active');
+    const isRegister = document.getElementById('submitBtn').textContent === 'Create Account';
     
     const studentGroup = document.getElementById('studentExtraGroup');
     const rollNoInput = document.getElementById('rollNo');
@@ -183,8 +294,7 @@ function handleRoleChange() {
 
 function updateIdentifierField() {
     const roleSelect = document.getElementById('roleSelect').value;
-    const registerTab = document.getElementById('registerTab');
-    const isRegister = registerTab.classList.contains('active');
+    const isRegister = document.getElementById('submitBtn').textContent === 'Create Account';
     const emailLabel = document.getElementById('emailLabel');
     const emailInput = document.getElementById('authEmail');
 
