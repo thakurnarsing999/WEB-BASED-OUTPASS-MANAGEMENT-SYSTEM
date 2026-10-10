@@ -2,12 +2,22 @@
 
 {% block content %}
 
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; flex-wrap: wrap; gap: 16px;">
     <div>
-        <h2 style="margin-bottom: 4px;">My Outpass Requests</h2>
-        <p>Monitor your active outpass permissions, status metrics, and digital OTP tokens.</p>
+        <div class="eyebrow-badge">
+            <span class="status-dot"></span>
+            <span>Student Registry</span>
+        </div>
+        <h1 style="font-family: var(--font-heading); font-size: 26px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-primary); margin-top: 4px; margin-bottom: 4px;">
+            My Outpass Requests
+        </h1>
+        <p style="font-size: 13.5px; color: var(--text-secondary);">
+            Track mentor approval decisions, review remarks, and retrieve authorization OTP codes.
+        </p>
     </div>
-    <a class="btn small secondary" href="{{ url_for('student_dashboard') }}">Back to Dashboard</a>
+    <a class="btn small secondary" href="{{ url_for('student_dashboard') }}">
+        Back to Dashboard
+    </a>
 </div>
 
 <div class="table-container">
@@ -26,11 +36,13 @@
         <tbody>
             {% for req in requests_data %}
             <tr>
-                <td style="font-weight: bold;">#{{ req.request_id }}</td>
-                <td style="color: var(--text-primary); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ req.reason }}">{{ req.reason }}</td>
+                <td class="mono-cell">#{{ req.request_id }}</td>
+                <td>
+                    <div class="reason-text" title="{{ req.reason }}">{{ req.reason }}</div>
+                </td>
                 <td>
                     <div style="font-weight: 500; color: var(--text-primary);">{{ req.out_date }}</div>
-                    <div style="font-size: 12px; color: var(--text-muted);">{{ req.out_time }}</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted); font-family: var(--font-mono);">{{ req.out_time }}</div>
                 </td>
 
                 <td>
@@ -39,11 +51,11 @@
                     </span>
                 </td>
 
-                <td style="font-family: monospace; font-size: 15px; font-weight: bold; color: #ffffff;">
+                <td class="mono-cell" style="font-size: 14px; font-weight: 600; color: var(--google-green-dark);">
                     {% if req.otp %}
                         {{ req.otp }}
                     {% else %}
-                        -
+                        <span style="color: var(--text-dim);">-</span>
                     {% endif %}
                 </td>
 
@@ -57,10 +69,13 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px 0;">You have not submitted any outpass requests yet.</td>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 50px 0;">
+                    No outpass applications submitted yet.
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
 {% endblock %}

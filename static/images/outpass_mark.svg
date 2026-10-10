@@ -1,0 +1,28 @@
+<svg viewBox="0 0 100 100" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="spectrumGateway" x1="10%" y1="10%" x2="90%" y2="90%">
+      <stop offset="0%" stop-color="#3186FF"/>
+      <stop offset="33%" stop-color="#00B95C"/>
+      <stop offset="66%" stop-color="#FBBC04"/>
+      <stop offset="100%" stop-color="#FC413D"/>
+    </linearGradient>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  
+  <!-- Outer smooth squircle pill -->
+  <rect x="8" y="8" width="84" height="84" rx="26" fill="#FFFFFF" stroke="#E8EAED" stroke-width="2"/>
+  
+  <!-- Spectrum Portal Gateway Arch -->
+  <path d="M30 72 V46 C30 35 39 26 50 26 C61 26 70 35 70 46 V72" 
+        stroke="url(#spectrumGateway)" stroke-width="7.5" stroke-linecap="round"/>
+        
+  <!-- Upward Transit Key / Departure Arrow -->
+  <path d="M50 38 L50 60 M50 38 L42 46 M50 38 L58 46" 
+        stroke="#1A73E8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        
+  <!-- Active Green Gateway Dot -->
+  <circle cx="50" cy="70" r="4" fill="#00B95C"/>
+</svg>

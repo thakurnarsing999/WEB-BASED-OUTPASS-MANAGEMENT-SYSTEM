@@ -2,37 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Web-Based Out Pass Management System</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OutPass • Campus Gateway System</title>
+    
+    <!-- Google Sans & Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,slnt,wdth,wght,ROND@8..144,-10..0,25..150,400..700,0..100&family=Google+Sans+Code:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=campus_outpass_pro_v1">
 </head>
 
 <body>
+    <!-- Ambient Luminous Spectrum Glow Orbs -->
+    <div class="antigravity-ambient" aria-hidden="true">
+        <div class="ambient-orb orb-blue"></div>
+        <div class="ambient-orb orb-green"></div>
+        <div class="ambient-orb orb-yellow"></div>
+        <div class="ambient-orb orb-red"></div>
+    </div>
 
-    {% if 'student_id' in session or 'mentor_id' in session or 'admin_id' in session or 'security_id' in session %}
-    <nav class="navbar">
-        <a href="{{ url_for('home') }}" class="logo" style="text-decoration: none;">
-            OutPass <span style="font-weight: 400; color: #a1a1aa;">Portal</span>
-        </a>
+    <!-- Micro-particles Floating Canvas -->
+    <canvas id="antigravity-canvas" aria-hidden="true"></canvas>
 
-        <div class="nav-links">
-            {% if 'student_id' in session %}
-                <a href="{{ url_for('student_dashboard') }}">Dashboard</a>
-                <a href="{{ url_for('apply_outpass') }}">Apply Outpass</a>
-                <a href="{{ url_for('view_status') }}">My History</a>
-            {% elif 'mentor_id' in session %}
-                <a href="{{ url_for('mentor_dashboard') }}">Applications</a>
-            {% elif 'security_id' in session %}
-                <a href="{{ url_for('security_dashboard') }}">Verification Terminal</a>
-            {% elif 'admin_id' in session %}
-                <a href="{{ url_for('admin_dashboard') }}">Admin Command Center</a>
-            {% endif %}
-            <a href="{{ url_for('logout') }}" class="btn small secondary" style="margin-left: 10px;">Logout</a>
-        </div>
-    </nav>
-    {% endif %}
+    <!-- Floating Detached Header Pill Navbar -->
+    <div class="navbar-wrapper">
+        <nav class="navbar">
+            <a href="{{ url_for('home') }}" class="brand-link" aria-label="Campus OutPass Management System">
+                <div class="brand-symbol">
+                    <img src="{{ url_for('static', filename='images/outpass_mark.svg') }}" alt="OutPass Logo" width="26" height="26">
+                </div>
+                <div>
+                    <span class="brand-name">OutPass</span>
+                    <span class="brand-tag">Campus Gateway</span>
+                </div>
+            </a>
 
-    <div class="container">
+            <div class="nav-links">
+                {% if 'student_id' in session %}
+                    <a href="{{ url_for('student_dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('apply_outpass') }}">Apply Outpass</a>
+                    <a href="{{ url_for('view_status') }}">History</a>
+                    <a href="{{ url_for('logout') }}" class="btn small secondary" style="margin-left: 6px;">
+                        Logout
+                    </a>
+                {% elif 'mentor_id' in session %}
+                    <a href="{{ url_for('mentor_dashboard') }}">Applications Review</a>
+                    <a href="{{ url_for('logout') }}" class="btn small secondary" style="margin-left: 6px;">
+                        Logout
+                    </a>
+                {% elif 'security_id' in session %}
+                    <a href="{{ url_for('security_dashboard') }}">Gate Terminal</a>
+                    <a href="{{ url_for('logout') }}" class="btn small secondary" style="margin-left: 6px;">
+                        Logout
+                    </a>
+                {% elif 'admin_id' in session %}
+                    <a href="{{ url_for('admin_dashboard') }}">Command Center</a>
+                    <a href="{{ url_for('logout') }}" class="btn small secondary" style="margin-left: 6px;">
+                        Logout
+                    </a>
+                {% else %}
+                    <!-- Guest View: Operational Status Indicator -->
+                    <span class="eyebrow-badge" style="margin-bottom: 0; background: #ffffff; border-color: rgba(0,0,0,0.06); padding: 5px 14px;">
+                        <span class="status-dot"></span>
+                        <span style="font-size: 12px; color: var(--text-body);">Gate Access Active</span>
+                    </span>
+                {% endif %}
+            </div>
+        </nav>
+    </div>
 
+    <!-- Main Container -->
+    <main class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -44,9 +85,8 @@
         {% endwith %}
 
         {% block content %}{% endblock %}
+    </main>
 
-    </div>
-
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}?v=campus_outpass_pro_v1"></script>
 </body>
 </html>

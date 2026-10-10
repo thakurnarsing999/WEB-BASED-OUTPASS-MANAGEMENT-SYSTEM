@@ -6,6 +6,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import random
 import os
 import datetime
+from dotenv import load_dotenv
+
+# Load local environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "outpass_secret_key")
@@ -26,7 +30,7 @@ def get_db_connection():
 
 
 
-ADMIN_AUTH_KEY = os.environ.get("ADMIN_AUTH_KEY", "adminpass123")
+ADMIN_AUTH_KEY = os.environ.get("ADMIN_AUTH_KEY", "adminpass@123")
 MENTOR_AUTH_KEY = os.environ.get("MENTOR_AUTH_KEY", "mentorpass123")
 SECURITY_AUTH_KEY = os.environ.get("SECURITY_AUTH_KEY", "securitypass123")
 
@@ -48,17 +52,16 @@ def register():
     phone_no = request.form["phone_no"]
     hashed_password = generate_password_hash(password)
 
+    if role == "Admin":
+        flash("Administrator accounts cannot be created via public registration.", "error")
+        return redirect(url_for("home"))
+
     if confirm_password and password != confirm_password:
         flash("Passwords do not match. Please re-enter your password.", "error")
         return redirect(url_for("home"))
 
-    # Security check for Admin, Security, & Mentor registration
-    if role == "Admin":
-        auth_code = request.form.get("auth_code")
-        if auth_code != ADMIN_AUTH_KEY:
-            flash("Invalid security authorization key.", "error")
-            return redirect(url_for("home"))
-    elif role == "Security":
+    # Security check for Security & Mentor registration
+    if role == "Security":
         auth_code = request.form.get("auth_code")
         if auth_code != SECURITY_AUTH_KEY:
             flash("Invalid security authorization key.", "error")
