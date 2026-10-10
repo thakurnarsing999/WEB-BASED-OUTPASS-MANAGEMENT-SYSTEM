@@ -6,10 +6,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import random
 import os
 import datetime
-from dotenv import load_dotenv
 
-# Load local environment variables from .env file
-load_dotenv()
+# Safe load of local environment variables (if python-dotenv is present)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "outpass_secret_key")
