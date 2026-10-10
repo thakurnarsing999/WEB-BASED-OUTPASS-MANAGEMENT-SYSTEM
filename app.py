@@ -39,6 +39,7 @@ SECURITY_AUTH_KEY = os.environ.get("SECURITY_AUTH_KEY", "securitypass123")
 
 
 @app.route("/")
+@app.route("/app.py")
 def home():
     return render_template("home.html")
 
