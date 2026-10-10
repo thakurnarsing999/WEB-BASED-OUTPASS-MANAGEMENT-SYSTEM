@@ -1,0 +1,835 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,slnt,wdth,wght,ROND@8..144,-10..0,25..150,400..700,0..100&family=Google+Sans+Code:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ==========================================================================
+   GOOGLE ANTIGRAVITY DESIGN SYSTEM (https://antigravity.google/)
+   Pure White Canvas | Google Spectrum Colors | Zero-Gravity Levitation
+   Google Sans Typography | Floating Pill Architecture | Minimal Black
+   ========================================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* 1. DOMINANT PURE WHITE CANVAS */
+    --bg-canvas: #ffffff;
+    --bg-surface: #ffffff;
+    --bg-surface-subtle: #f8f9fa;
+    --bg-surface-container: #f1f3f4;
+    --bg-glass: rgba(255, 255, 255, 0.88);
+
+    /* 2. MINIMAL SHARP BLACK / SLATE TYPOGRAPHY */
+    --text-primary: #1f1f1f;
+    --text-body: #3c4043;
+    --text-secondary: #5f6368;
+    --text-muted: #80868b;
+    --text-dim: #9aa0a6;
+
+    /* 3. GOOGLE SPECTRUM COLORS */
+    /* Google Blue */
+    --google-blue: #1a73e8;
+    --google-blue-hover: #1557b0;
+    --google-blue-subtle: #e8f0fe;
+    --google-blue-border: #d2e3fc;
+    --google-blue-glow: rgba(26, 115, 232, 0.25);
+
+    /* Google Emerald Green */
+    --google-green: #00b95c;
+    --google-green-dark: #137333;
+    --google-green-subtle: #e6f4ea;
+    --google-green-border: #ceead6;
+    --google-green-glow: rgba(0, 185, 92, 0.25);
+
+    /* Google Amber Yellow */
+    --google-yellow: #fbbc04;
+    --google-yellow-dark: #b06000;
+    --google-yellow-subtle: #fef7e0;
+    --google-yellow-border: #feefc3;
+    --google-yellow-glow: rgba(251, 188, 4, 0.25);
+
+    /* Google Coral Red */
+    --google-red: #fc413d;
+    --google-red-dark: #c5221f;
+    --google-red-subtle: #fce8e6;
+    --google-red-border: #fad2cf;
+    --google-red-glow: rgba(252, 65, 61, 0.25);
+
+    /* Google Cyan / Light Blue */
+    --google-cyan: #3186ff;
+
+    /* 4. HAIRCUT BORDERS & SURFACES */
+    --border-hairline: rgba(0, 0, 0, 0.08);
+    --border-subtle: #dadce0;
+    --border-hover: #bdc1c6;
+    --border-focus: #1a73e8;
+
+    /* 5. TYPOGRAPHY STACK */
+    --font-heading: 'Google Sans Flex', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Google Sans Flex', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'Google Sans Code', 'JetBrains Mono', monospace;
+
+    /* 6. ZERO-GRAVITY SHADOWS & ELEVATIONS */
+    --shadow-pill: 0 2px 6px rgba(0, 0, 0, 0.05);
+    --shadow-card: 0 16px 40px -12px rgba(0, 0, 0, 0.07), 0 0 1px 1px rgba(0, 0, 0, 0.04);
+    --shadow-levitate: 0 24px 50px -10px rgba(26, 115, 232, 0.12), 0 0 1px 1px rgba(0, 0, 0, 0.06);
+    --shadow-button: 0 1px 3px rgba(26, 115, 232, 0.3);
+    --shadow-button-hover: 0 4px 16px rgba(26, 115, 232, 0.38);
+
+    /* 7. SPRING MOTION */
+    --spring-motion: cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-fast: all 0.18s var(--spring-motion);
+    --transition-medium: all 0.32s var(--spring-motion);
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.5;
+    overflow-x: hidden;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
+   ZERO-GRAVITY AMBIENT GLOW ORBS (ANTIGRAVITY AURA)
+   Four-Corner Soft Colorful Ambient Blobs
+   ========================================================================== */
+
+.antigravity-ambient {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.ambient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(85px);
+    opacity: 0.16;
+    animation: orb-levitate 16s ease-in-out infinite alternate;
+}
+
+.orb-blue {
+    top: -5vw;
+    left: 15vw;
+    width: 45vw;
+    height: 45vw;
+    background: radial-gradient(circle, #3186ff 0%, rgba(49, 134, 255, 0) 70%);
+    animation-delay: 0s;
+}
+
+.orb-green {
+    bottom: -8vw;
+    left: -5vw;
+    width: 40vw;
+    height: 40vw;
+    background: radial-gradient(circle, #00b95c 0%, rgba(0, 185, 92, 0) 70%);
+    animation-delay: -4s;
+}
+
+.orb-yellow {
+    top: 20vh;
+    right: -8vw;
+    width: 38vw;
+    height: 38vw;
+    background: radial-gradient(circle, #fbbc04 0%, rgba(251, 188, 4, 0) 70%);
+    animation-delay: -8s;
+}
+
+.orb-red {
+    bottom: -6vw;
+    right: 15vw;
+    width: 36vw;
+    height: 36vw;
+    background: radial-gradient(circle, #fc413d 0%, rgba(252, 65, 61, 0) 70%);
+    animation-delay: -12s;
+}
+
+@keyframes orb-levitate {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    50% {
+        transform: translate(25px, -30px) scale(1.05);
+    }
+    100% {
+        transform: translate(-20px, 20px) scale(0.98);
+    }
+}
+
+/* Floating micro-particles background canvas */
+#antigravity-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ==========================================================================
+   FLOATING DETACHED PILL HEADER (NAVBAR)
+   ========================================================================== */
+
+.navbar-wrapper {
+    position: sticky;
+    top: 14px;
+    z-index: 100;
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-glass);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--border-hairline);
+    border-radius: 999px;
+    padding: 7px 10px 7px 18px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+    transition: var(--transition-medium);
+}
+
+.navbar:hover {
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.06);
+}
+
+/* Antigravity Brand in Navbar */
+.brand-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+}
+
+.brand-symbol {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.brand-link:hover .brand-symbol {
+    transform: translateY(-2px) scale(1.08);
+}
+
+.brand-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.brand-tag {
+    font-weight: 400;
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    margin-left: 2px;
+}
+
+/* Navigation Links */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 450;
+    color: var(--text-body);
+    padding: 7px 15px;
+    border-radius: 999px;
+    transition: var(--transition-fast);
+}
+
+.nav-links a:hover {
+    background: var(--bg-surface-container);
+    color: #000000;
+}
+
+.nav-links a.active {
+    background: var(--google-blue-subtle);
+    color: var(--google-blue);
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   CONTAINER & LAYOUT
+   ========================================================================== */
+
+.container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 24px 20px 80px 20px;
+    position: relative;
+    z-index: 2;
+}
+
+/* ==========================================================================
+   HERO PORTAL CARD & LEVITATION (LOGIN / REGISTER)
+   ========================================================================== */
+
+.portal-container {
+    padding: 32px 0 60px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hairline);
+    border-radius: 28px;
+    padding: 36px 40px 32px 40px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+    animation: zero-gravity-float 7s ease-in-out infinite;
+    transition: var(--transition-medium);
+}
+
+.form-box:hover {
+    box-shadow: var(--shadow-levitate);
+}
+
+/* Zero Gravity Levitation Animation */
+@keyframes zero-gravity-float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+/* Google Spectrum Accent Beam on Top of Form Box */
+.spectrum-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3.5px;
+    background: linear-gradient(90deg, #3186ff 0%, #00b95c 33%, #fbbc04 66%, #fc413d 100%);
+    background-size: 200% 100%;
+    animation: spectrum-flow 6s ease infinite;
+}
+
+@keyframes spectrum-flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Antigravity Eyebrow Pill Badge */
+.eyebrow-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--bg-surface-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    padding: 4px 13px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-body);
+    margin-bottom: 12px;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--google-green);
+    box-shadow: 0 0 8px var(--google-green);
+    animation: pulse-dot 2.2s infinite;
+}
+
+@keyframes pulse-dot {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 185, 92, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(0, 185, 92, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 185, 92, 0); }
+}
+
+/* Segmented Pill Tab Switcher */
+.tab-container {
+    display: flex;
+    background: var(--bg-surface-container);
+    border-radius: 999px;
+    padding: 3.5px;
+    margin: 20px 0 24px 0;
+    position: relative;
+}
+
+.tab-button {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-radius: 999px;
+    padding: 9px 18px;
+    font-family: var(--font-heading);
+    font-size: 13.5px;
+    font-weight: 450;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    text-align: center;
+}
+
+.tab-button:hover {
+    color: var(--text-primary);
+}
+
+.tab-button.active {
+    background: #ffffff;
+    color: var(--google-blue);
+    font-weight: 500;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.08);
+}
+
+/* Form Groups & Inputs */
+.form-group {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-body);
+    margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="date"],
+input[type="time"],
+select,
+textarea {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    padding: 11px 18px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-primary);
+    transition: var(--transition-fast);
+    outline: none;
+}
+
+textarea {
+    border-radius: 18px;
+    padding: 12px 18px;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-dim);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--google-blue);
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.16);
+}
+
+select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%235F6368' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 36px;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* ==========================================================================
+   BUTTONS (GOOGLE ANTIGRAVITY ROUNDED PILLS)
+   ========================================================================== */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 999px;
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    padding: 11px 24px;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: var(--transition-fast);
+    background: var(--google-blue);
+    color: #ffffff;
+    box-shadow: var(--shadow-button);
+}
+
+.btn:hover {
+    background: var(--google-blue-hover);
+    box-shadow: var(--shadow-button-hover);
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn.secondary {
+    background: #ffffff;
+    color: var(--text-body);
+    border: 1px solid var(--border-subtle);
+    box-shadow: none;
+}
+
+.btn.secondary:hover {
+    background: var(--bg-surface-subtle);
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-pill);
+}
+
+.btn.small {
+    padding: 7px 16px;
+    font-size: 13px;
+}
+
+.btn.full {
+    width: 100%;
+}
+
+.btn.danger {
+    background: var(--google-red);
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(252, 65, 61, 0.3);
+}
+
+.btn.danger:hover {
+    background: var(--google-red-dark);
+    box-shadow: 0 4px 14px rgba(252, 65, 61, 0.35);
+}
+
+.btn.success {
+    background: var(--google-green);
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 185, 92, 0.3);
+}
+
+.btn.success:hover {
+    background: var(--google-green-dark);
+    box-shadow: 0 4px 14px rgba(0, 185, 92, 0.35);
+}
+
+/* ==========================================================================
+   STATUS PILL BADGES (GOOGLE ACCENTS)
+   ========================================================================== */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+
+.status.approved,
+.status.exited {
+    background: var(--google-green-subtle);
+    color: var(--google-green-dark);
+    border-color: var(--google-green-border);
+}
+
+.status.pending {
+    background: var(--google-yellow-subtle);
+    color: var(--google-yellow-dark);
+    border-color: var(--google-yellow-border);
+}
+
+.status.rejected {
+    background: var(--google-red-subtle);
+    color: var(--google-red-dark);
+    border-color: var(--google-red-border);
+}
+
+/* ==========================================================================
+   BENTO ACTION CARDS (DASHBOARD)
+   ========================================================================== */
+
+.dashboard {
+    width: 100%;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 22px;
+    margin-top: 24px;
+}
+
+.card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hairline);
+    border-radius: 24px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.04);
+    transition: var(--transition-medium);
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--google-blue);
+    opacity: 0;
+    transition: var(--transition-fast);
+}
+
+.card.accent-blue::before { background: var(--google-blue); opacity: 1; }
+.card.accent-green::before { background: var(--google-green); opacity: 1; }
+.card.accent-orange::before { background: var(--google-yellow); opacity: 1; }
+.card.accent-red::before { background: var(--google-red); opacity: 1; }
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-levitate);
+    border-color: rgba(26, 115, 232, 0.25);
+}
+
+.card h2 {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.015em;
+}
+
+.card p {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin-bottom: 22px;
+}
+
+/* ==========================================================================
+   METRICS GRID (MENTOR & ADMIN)
+   ========================================================================== */
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin: 24px 0 32px 0;
+}
+
+.metric-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hairline);
+    border-radius: 20px;
+    padding: 22px 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-fast);
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.05);
+}
+
+.metric-card h4 {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.metric-card .number {
+    font-family: var(--font-heading);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.metric-card.theme-blue { border-left: 4px solid var(--google-blue); }
+.metric-card.theme-green { border-left: 4px solid var(--google-green); }
+.metric-card.theme-orange { border-left: 4px solid var(--google-yellow); }
+.metric-card.theme-red { border-left: 4px solid var(--google-red); }
+
+/* ==========================================================================
+   DATA TABLES (CLEAN GOOGLE SANS STYLE)
+   ========================================================================== */
+
+.table-container {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hairline);
+    border-radius: 22px;
+    overflow-x: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    margin-top: 14px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 13.5px;
+}
+
+thead {
+    background: var(--bg-surface-subtle);
+    border-bottom: 1px solid var(--border-hairline);
+}
+
+th {
+    padding: 14px 18px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+td {
+    padding: 15px 18px;
+    border-bottom: 1px solid var(--border-hairline);
+    color: var(--text-body);
+    vertical-align: middle;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #fafbfc;
+}
+
+.mono-cell {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--text-secondary);
+}
+
+.reason-text {
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   ALERTS & FLASH MESSAGES
+   ========================================================================== */
+
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 450;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    animation: alert-slide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes alert-slide {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.alert.success {
+    background: var(--google-green-subtle);
+    color: var(--google-green-dark);
+    border-color: var(--google-green-border);
+}
+
+.alert.error,
+.alert.danger {
+    background: var(--google-red-subtle);
+    color: var(--google-red-dark);
+    border-color: var(--google-red-border);
+}
+
+.alert.warning {
+    background: var(--google-yellow-subtle);
+    color: var(--google-yellow-dark);
+    border-color: var(--google-yellow-border);
+}
+
+.alert.info {
+    background: var(--google-blue-subtle);
+    color: var(--google-blue);
+    border-color: var(--google-blue-border);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .navbar-wrapper {
+        padding: 0 10px;
+        top: 8px;
+    }
+    .navbar {
+        border-radius: 20px;
+        padding: 10px 14px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .form-box {
+        padding: 28px 22px;
+        border-radius: 24px;
+    }
+    .cards {
+        grid-template-columns: 1fr;
+    }
+}
