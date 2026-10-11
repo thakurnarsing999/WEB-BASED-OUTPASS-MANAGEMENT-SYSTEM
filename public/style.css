@@ -12,6 +12,14 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
+[id] {
+    scroll-margin-top: 96px;
+}
+
 :root {
     /* 1. DOMINANT PURE WHITE CANVAS */
     --bg-canvas: #ffffff;

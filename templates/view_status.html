@@ -25,6 +25,7 @@
         <thead>
             <tr>
                 <th>Request ID</th>
+                <th>Assigned Mentor</th>
                 <th>Reason</th>
                 <th>Out Date / Time</th>
                 <th>Approval Status</th>
@@ -37,6 +38,13 @@
             {% for req in requests_data %}
             <tr>
                 <td class="mono-cell">#{{ req.request_id }}</td>
+                <td>
+                    {% if req.mentor_name %}
+                        <span style="font-weight: 600; color: var(--google-blue);">{{ req.mentor_name }}</span>
+                    {% else %}
+                        <span style="color: var(--text-muted); font-style: italic;">Any Mentor</span>
+                    {% endif %}
+                </td>
                 <td>
                     <div class="reason-text" title="{{ req.reason }}">{{ req.reason }}</div>
                 </td>
@@ -69,7 +77,7 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 50px 0;">
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 50px 0;">
                     No outpass applications submitted yet.
                 </td>
             </tr>

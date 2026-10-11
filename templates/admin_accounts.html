@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Header Row -->
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <div class="eyebrow-badge">
+            <span class="status-dot"></span>
+            <span>Identity & Access Directory</span>
+        </div>
+        <h1 style="font-family: var(--font-heading); font-size: 28px; font-weight: 600; letter-spacing: -0.025em; color: var(--text-primary); margin-top: 4px; margin-bottom: 4px;">
+            Campus Accounts & Logins
+        </h1>
+        <p style="font-size: 14px; color: var(--text-secondary);">
+            Track registration details and session authentication history for Mentors, Security, and Students.
+        </p>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn small secondary">
+            ← Back to Overview
+        </a>
+        <div class="status approved">
+            Root Admin
+        </div>
+    </div>
+</div>
+
+{% set student_count = students|length %}
+{% set mentor_count = mentors|length %}
+{% set security_count = security_users|length %}
+
+<!-- Role Filter Tabs -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
+    <div class="auth-tabs" style="margin-bottom: 0; max-width: 500px; width: auto;">
+        <button class="tab-button active" onclick="switchAdminTab('mentors', this)" type="button">
+            Faculty Mentors ({{ mentor_count }})
+        </button>
+        <button class="tab-button" onclick="switchAdminTab('security', this)" type="button">
+            Security Personnel ({{ security_count }})
+        </button>
+        <button class="tab-button" onclick="switchAdminTab('students', this)" type="button">
+            Students ({{ student_count }})
+        </button>
+    </div>
+
+    <div style="font-size: 13px; color: var(--text-secondary);">
+        Total Campus Accounts: <strong style="color: var(--text-primary);">{{ student_count + mentor_count + security_count }}</strong>
+    </div>
+</div>
+
+<!-- Tab 1: Faculty Mentors -->
+<div id="admin-tab-mentors" class="table-container admin-tab-content">
+    <table>
+        <thead>
+            <tr>
+                <th>Mentor ID</th>
+                <th>Full Name</th>
+                <th>Staff / Employee ID</th>
+                <th>Email Address</th>
+                <th>Contact Phone</th>
+                <th>Last Login Activity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mentor in mentors %}
+            <tr>
+                <td class="mono-cell">#M-{{ mentor.mentor_id }}</td>
+                <td style="color: var(--text-primary); font-weight: 600;">{{ mentor.name }}</td>
+                <td class="mono-cell" style="font-size: 12.5px; color: var(--google-blue); font-weight: 500;">{{ mentor.staff_id }}</td>
+                <td style="color: var(--text-secondary);">{{ mentor.email }}</td>
+                <td class="mono-cell" style="font-size: 12px; color: var(--text-secondary);">{{ mentor.phone_no }}</td>
+                <td>
+                    {% if mentor.last_login %}
+                        <span class="status approved" style="font-size: 11.5px; padding: 4px 10px;">
+                            <span class="status-dot"></span>
+                            Logged in: {{ mentor.last_login.strftime('%b %d, %Y %I:%M %p') if mentor.last_login.strftime is defined else mentor.last_login }}
+                        </span>
+                    {% else %}
+                        <span style="font-size: 12px; color: var(--text-muted); font-style: italic;">
+                            Never logged in
+                        </span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px 0;">
+                    No faculty mentors registered yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Tab 2: Security Personnel -->
+<div id="admin-tab-security" class="table-container admin-tab-content" style="display: none;">
+    <table>
+        <thead>
+            <tr>
+                <th>Security ID</th>
+                <th>Full Name</th>
+                <th>Email Address</th>
+                <th>Contact Phone</th>
+                <th>Last Login Activity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sec in security_users %}
+            <tr>
+                <td class="mono-cell">#S-{{ sec.security_id }}</td>
+                <td style="color: var(--text-primary); font-weight: 600;">{{ sec.name }}</td>
+                <td style="color: var(--text-secondary);">{{ sec.email }}</td>
+                <td class="mono-cell" style="font-size: 12px; color: var(--text-secondary);">{{ sec.phone_no }}</td>
+                <td>
+                    {% if sec.last_login %}
+                        <span class="status approved" style="font-size: 11.5px; padding: 4px 10px;">
+                            <span class="status-dot"></span>
+                            Logged in: {{ sec.last_login.strftime('%b %d, %Y %I:%M %p') if sec.last_login.strftime is defined else sec.last_login }}
+                        </span>
+                    {% else %}
+                        <span style="font-size: 12px; color: var(--text-muted); font-style: italic;">
+                            Never logged in
+                        </span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px 0;">
+                    No security personnel registered yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Tab 3: Registered Students -->
+<div id="admin-tab-students" class="table-container admin-tab-content" style="display: none;">
+    <table>
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Full Name</th>
+                <th>Roll No</th>
+                <th>Department</th>
+                <th>Year</th>
+                <th>Email Address</th>
+                <th>Contact Phone</th>
+                <th>Last Login Activity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td class="mono-cell">#{{ student.student_id }}</td>
+                <td style="color: var(--text-primary); font-weight: 600;">{{ student.name }}</td>
+                <td class="mono-cell" style="font-size: 12px; color: var(--text-secondary);">{{ student.roll_no }}</td>
+                <td><span style="font-weight: 600; color: var(--brand-blue);">{{ student.department }}</span></td>
+                <td>{{ student.year }}</td>
+                <td style="color: var(--text-secondary);">{{ student.email }}</td>
+                <td class="mono-cell" style="font-size: 12px; color: var(--text-secondary);">{{ student.phone_no }}</td>
+                <td>
+                    {% if student.last_login %}
+                        <span class="status approved" style="font-size: 11.5px; padding: 4px 10px;">
+                            <span class="status-dot"></span>
+                            Logged in: {{ student.last_login.strftime('%b %d, %Y %I:%M %p') if student.last_login.strftime is defined else student.last_login }}
+                        </span>
+                    {% else %}
+                        <span style="font-size: 12px; color: var(--text-muted); font-style: italic;">
+                            Never logged in
+                        </span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 40px 0;">
+                    No registered students found in database.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function switchAdminTab(role, btn) {
+    document.querySelectorAll('.admin-tab-content').forEach(el => el.style.display = 'none');
+    btn.parentElement.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+    
+    const target = document.getElementById('admin-tab-' + role);
+    if (target) {
+        target.style.display = 'block';
+    }
+    btn.classList.add('active');
+}
+</script>
+
+{% endblock %}

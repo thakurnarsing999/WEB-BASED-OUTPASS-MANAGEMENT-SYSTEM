@@ -13,17 +13,23 @@
             Mentor Dashboard
         </h1>
         <p style="font-size: 14px; color: var(--text-secondary);">
-            Review and authorize active student outpass requests in real-time.
+            Review student outpass applications, inspect guardian contacts, and issue digital gate clearance OTPs.
         </p>
     </div>
-    <div class="status approved">
-        Active Mentor: <strong style="color: var(--google-green-dark); margin-left: 4px;">{{ session["mentor_username"] }}</strong>
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <a href="{{ url_for('mentor_students') }}" class="btn small secondary">
+            👥 View Student Directory ({{ student_count }})
+        </a>
+        <div class="status approved">
+            Active Mentor: <strong style="color: var(--google-green-dark); margin-left: 4px;">{{ session["mentor_username"] }}</strong>
+        </div>
     </div>
 </div>
 
 {% set pending_count = namespace(value=0) %}
 {% set approved_count = namespace(value=0) %}
 {% set total_count = requests_data|length %}
+
 {% for req in requests_data %}
     {% if req.status == 'Pending' %}
         {% set pending_count.value = pending_count.value + 1 %}
@@ -32,7 +38,7 @@
     {% endif %}
 {% endfor %}
 
-<!-- Color-Coded Metrics Grid (Blue, Orange, Green) -->
+<!-- Color-Coded Metrics Grid -->
 <div class="metrics-grid">
     <div class="metric-card theme-blue">
         <h4>Total Applications</h4>
@@ -46,89 +52,124 @@
         <h4>Approved / Exited</h4>
         <div class="number">{{ approved_count.value }}</div>
     </div>
+    <div class="metric-card theme-yellow">
+        <h4>Registered Students</h4>
+        <div class="number">{{ student_count }}</div>
+    </div>
 </div>
 
-<h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: var(--text-primary); margin-top: 36px; margin-bottom: 12px; letter-spacing: -0.01em;">
-    Outpass Applications Queue
-</h3>
+<!-- ============================================== -->
+<!-- OUTPASS APPLICATIONS QUEUE (FOCUSED VIEW)      -->
+<!-- ============================================== -->
+<div style="margin-top: 36px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <div class="eyebrow-badge" style="background: var(--google-blue-subtle); color: var(--google-blue); border-color: var(--google-blue-border); margin-bottom: 6px;">
+                Pending & Active Applications
+            </div>
+            <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.015em; margin: 0;">
+                Outpass Applications Queue
+            </h2>
+            <p style="font-size: 13.5px; color: var(--text-secondary); margin-top: 4px;">
+                Evaluate student pass requests, verify destination reasons, and generate digital OTP clearance codes.
+            </p>
+        </div>
 
-<div class="table-container">
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Student</th>
-                <th>Roll No</th>
-                <th>Department</th>
-                <th>Reason</th>
-                <th>Date / Time</th>
-                <th>Parent Contact</th>
-                <th>Status</th>
-                <th>Gate OTP</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+        <a href="{{ url_for('mentor_students') }}" class="btn small secondary">
+            <span>Student Logins & Directory →</span>
+        </a>
+    </div>
 
-        <tbody>
-            {% for req in requests_data %}
-            <tr>
-                <td class="mono-cell">#{{ req.request_id }}</td>
-                <td style="color: var(--text-primary); font-weight: 600;">{{ req.name }}</td>
-                <td class="mono-cell" style="font-size: 12px; color: var(--text-secondary);">{{ req.roll_no }}</td>
-                <td>{{ req.department }} <span style="color: var(--text-muted); font-size: 11.5px;">({{ req.year }})</span></td>
-                <td>
-                    <div class="reason-text" title="{{ req.reason }}">{{ req.reason }}</div>
-                </td>
-                <td>
-                    <div style="font-weight: 600; color: var(--text-primary);">{{ req.out_date }}</div>
-                    <div style="font-size: 11.5px; color: var(--text-muted); font-family: var(--font-mono);">{{ req.out_time }}</div>
-                </td>
-                <td class="mono-cell" style="font-size: 12px; color: var(--text-secondary);">{{ req.parent_contact }}</td>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Student Name</th>
+                    <th>Roll No</th>
+                    <th>Department</th>
+                    <th>Assigned To</th>
+                    <th>Reason</th>
+                    <th>Date / Time</th>
+                    <th>Parent Contact</th>
+                    <th>Status</th>
+                    <th>Gate OTP</th>
+                    <th>Actions / Remarks</th>
+                </tr>
+            </thead>
 
-                <td>
-                    <span class="status {{ req.status|lower }}">
-                        {{ req.status }}
-                    </span>
-                </td>
+            <tbody>
+                {% for req in requests_data %}
+                <tr>
+                    <td class="mono-cell">#{{ req.request_id }}</td>
+                    <td style="color: var(--text-primary); font-weight: 600;">{{ req.name }}</td>
+                    <td class="mono-cell" style="font-size: 12px; color: var(--text-secondary);">{{ req.roll_no }}</td>
+                    <td>{{ req.department }} <span style="color: var(--text-muted); font-size: 11.5px;">({{ req.year }})</span></td>
+                    <td>
+                        {% if req.mentor_name %}
+                            <span style="font-size: 12px; font-weight: 600; color: var(--google-blue);">
+                                {{ req.mentor_name }}
+                            </span>
+                        {% else %}
+                            <span style="font-size: 12px; color: var(--text-muted); font-style: italic;">
+                                Any Mentor
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="reason-text" title="{{ req.reason }}">{{ req.reason }}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600; color: var(--text-primary);">{{ req.out_date }}</div>
+                        <div style="font-size: 11.5px; color: var(--text-muted); font-family: var(--font-mono);">{{ req.out_time }}</div>
+                    </td>
+                    <td class="mono-cell" style="font-size: 12px; color: var(--text-secondary);">{{ req.parent_contact }}</td>
 
-                <td class="mono-cell" style="font-size: 14px; font-weight: 700; color: var(--color-green);">
-                    {% if req.otp %}
-                        {{ req.otp }}
-                    {% else %}
-                        <span style="color: var(--text-dim);">-</span>
-                    {% endif %}
-                </td>
-
-                <td>
-                    {% if req.status == "Pending" %}
-                        <div style="display: flex; flex-direction: column; gap: 6px;">
-                            <form method="POST" action="{{ url_for('approve_request', request_id=req.request_id) }}" onsubmit="return confirmApprove()">
-                                <button type="submit" class="btn small success full" style="padding: 6px 12px; font-size: 11.5px;">
-                                    ✓ Approve
-                                </button>
-                            </form>
-
-                            <form method="POST" action="{{ url_for('reject_request', request_id=req.request_id) }}" onsubmit="return confirmReject()" style="display: flex; gap: 4px;">
-                                <input type="text" name="remarks" placeholder="Reason" required style="padding: 5px 8px; font-size: 11.5px; width: 95px; border-radius: 6px;">
-                                <button type="submit" class="btn small danger" style="padding: 5px 10px; font-size: 11.5px; border-radius: 6px;">Reject</button>
-                            </form>
-                        </div>
-                    {% else %}
-                        <span style="font-size: 12.5px; color: var(--text-muted);">
-                            {{ req.mentor_remarks if req.mentor_remarks else 'No remarks' }}
+                    <td>
+                        <span class="status {{ req.status|lower }}">
+                            {{ req.status }}
                         </span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="10" style="text-align: center; color: var(--text-muted); padding: 50px 0;">
-                    No pending outpass applications in review queue.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                    </td>
+
+                    <td class="mono-cell" style="font-size: 14px; font-weight: 700; color: var(--color-green);">
+                        {% if req.otp %}
+                            {{ req.otp }}
+                        {% else %}
+                            <span style="color: var(--text-dim);">-</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if req.status == "Pending" %}
+                            <div style="display: flex; flex-direction: column; gap: 6px;">
+                                <form method="POST" action="{{ url_for('approve_request', request_id=req.request_id) }}" onsubmit="return confirmApprove()">
+                                    <button type="submit" class="btn small success full" style="padding: 6px 12px; font-size: 11.5px;">
+                                        ✓ Approve
+                                    </button>
+                                </form>
+
+                                <form method="POST" action="{{ url_for('reject_request', request_id=req.request_id) }}" onsubmit="return confirmReject()" style="display: flex; gap: 4px;">
+                                    <input type="text" name="remarks" placeholder="Reason" required style="padding: 5px 8px; font-size: 11.5px; width: 95px; border-radius: 6px;">
+                                    <button type="submit" class="btn small danger" style="padding: 5px 10px; font-size: 11.5px; border-radius: 6px;">Reject</button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <span style="font-size: 12.5px; color: var(--text-muted);">
+                                {{ req.mentor_remarks if req.mentor_remarks else 'No remarks' }}
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="11" style="text-align: center; color: var(--text-muted); padding: 50px 0;">
+                        No student outpass applications in review queue.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 {% endblock %}

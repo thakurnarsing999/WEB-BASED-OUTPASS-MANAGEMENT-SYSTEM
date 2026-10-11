@@ -25,6 +25,22 @@
         </div>
 
         <form method="POST">
+            <!-- Faculty Mentor Selection -->
+            <div class="form-group">
+                <label>Choose Faculty Mentor to Review</label>
+                <select name="mentor_id">
+                    <option value="all">-- Any Available Department Mentor --</option>
+                    {% for mentor in mentors %}
+                        <option value="{{ mentor.mentor_id }}" {% if request.args.get('mentor_id') == mentor.mentor_id|string %}selected{% endif %}>
+                            {{ mentor.name }} (Staff ID: {{ mentor.staff_id }})
+                        </option>
+                    {% endfor %}
+                </select>
+                <span style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                    Select the specific mentor you want to review your outpass application.
+                </span>
+            </div>
+
             <div class="form-group">
                 <label>Reason for Outpass</label>
                 <textarea name="reason" rows="3" placeholder="State specific reason (e.g. Medical appointment, family requirement, academic project)" required style="resize: none;"></textarea>

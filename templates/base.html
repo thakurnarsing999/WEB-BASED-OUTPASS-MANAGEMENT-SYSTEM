@@ -40,24 +40,29 @@
 
             <div class="nav-links">
                 {% if 'student_id' in session %}
-                    <a href="{{ url_for('student_dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('student_dashboard') }}">Overview</a>
+                    <a href="{{ url_for('student_mentors') }}">Present Mentors</a>
                     <a href="{{ url_for('apply_outpass') }}">Apply Outpass</a>
-                    <a href="{{ url_for('view_status') }}">History</a>
+                    <a href="{{ url_for('view_status') }}">Pass History</a>
                     <a href="{{ url_for('logout') }}" class="btn small secondary" style="margin-left: 6px;">
                         Logout
                     </a>
                 {% elif 'mentor_id' in session %}
-                    <a href="{{ url_for('mentor_dashboard') }}">Applications Review</a>
+                    <a href="{{ url_for('mentor_dashboard') }}">Outpass Queue</a>
+                    <a href="{{ url_for('mentor_students') }}">Student Directory</a>
                     <a href="{{ url_for('logout') }}" class="btn small secondary" style="margin-left: 6px;">
                         Logout
                     </a>
                 {% elif 'security_id' in session %}
                     <a href="{{ url_for('security_dashboard') }}">Gate Terminal</a>
+                    <a href="{{ url_for('security_history') }}">Exit History</a>
                     <a href="{{ url_for('logout') }}" class="btn small secondary" style="margin-left: 6px;">
                         Logout
                     </a>
                 {% elif 'admin_id' in session %}
-                    <a href="{{ url_for('admin_dashboard') }}">Command Center</a>
+                    <a href="{{ url_for('admin_dashboard') }}">Overview</a>
+                    <a href="{{ url_for('admin_accounts') }}">Campus Accounts</a>
+                    <a href="{{ url_for('admin_outpasses') }}">Applied Outpasses</a>
                     <a href="{{ url_for('logout') }}" class="btn small secondary" style="margin-left: 6px;">
                         Logout
                     </a>

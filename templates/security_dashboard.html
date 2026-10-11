@@ -2,58 +2,107 @@
 
 {% block content %}
 
-<div class="portal-container" style="padding-top: 16px;">
-    <div class="form-box" style="max-width: 520px;">
-        <!-- Multi-Color Google Spectrum Accent Beam -->
-        <div class="spectrum-bar"></div>
+<!-- Header & Session Meta -->
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <div class="eyebrow-badge">
+            <span class="status-dot"></span>
+            <span>Campus Perimeter Terminal</span>
+        </div>
+        <h1 style="font-family: var(--font-heading); font-size: 28px; font-weight: 600; letter-spacing: -0.025em; color: var(--text-primary); margin-top: 4px; margin-bottom: 4px;">
+            Gate Security Verification
+        </h1>
+        <p style="font-size: 14px; color: var(--text-secondary);">
+            Verify student outpass credentials and authorize physical campus perimeter exit.
+        </p>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <a href="{{ url_for('security_history') }}" class="btn small secondary">
+            🕒 Exit Audit History ({{ history_count }})
+        </a>
+        <div class="status approved">
+            Active Gate: <strong style="color: var(--google-green-dark); margin-left: 4px;">{{ session.get("security_username", "Main Gate") }}</strong>
+        </div>
+    </div>
+</div>
 
-        <!-- Header Section -->
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-hairline); padding-bottom: 16px; margin-bottom: 22px;">
+<!-- Metrics Grid -->
+<div class="metrics-grid" style="margin-bottom: 32px;">
+    <div class="metric-card theme-blue">
+        <h4>Total Verified Gate Exits</h4>
+        <div class="number">{{ history_count }}</div>
+    </div>
+    <div class="metric-card theme-green">
+        <h4>Verification Protocol</h4>
+        <div class="number" style="font-size: 20px; font-weight: 600; padding-top: 8px;">4-Digit OTP</div>
+    </div>
+    <div class="metric-card theme-yellow">
+        <h4>Security Mode</h4>
+        <div class="number" style="font-size: 20px; font-weight: 600; padding-top: 8px;">Real-Time Logging</div>
+    </div>
+</div>
+
+<!-- Fast Pass Clearance Card -->
+<div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 20px; box-shadow: var(--shadow-card); overflow: hidden; margin-bottom: 36px; position: relative;">
+    <!-- Spectrum Accent Beam -->
+    <div class="spectrum-bar"></div>
+
+    <div style="padding: 32px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; flex-wrap: wrap; gap: 12px;">
             <div>
-                <div class="eyebrow-badge">
-                    <span class="status-dot"></span>
-                    <span>Gate Terminal</span>
+                <div class="eyebrow-badge" style="background: var(--google-blue-subtle); color: var(--google-blue); border-color: var(--google-blue-border); margin-bottom: 4px;">
+                    Fast Pass Clearance
                 </div>
-                <h1 style="font-family: var(--font-heading); font-size: 24px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-primary); margin-top: 4px; margin-bottom: 4px;">
-                    Security Verification
-                </h1>
-                <p style="font-size: 13.5px; color: var(--text-secondary);">
-                    Verify student outpass legitimacy via digital OTP code.
+                <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: var(--text-primary); margin: 0;">
+                    Authorize Student Exit
+                </h2>
+                <p style="font-size: 13.5px; color: var(--text-secondary); margin-top: 4px;">
+                    Enter the student's Outpass Request ID and 4-digit verification OTP code.
                 </p>
             </div>
-            <div class="status approved">
-                Active Gate
-            </div>
+
+            <a href="{{ url_for('security_history') }}" class="btn small secondary">
+                <span>View Full Exit History →</span>
+            </a>
         </div>
 
-        <form method="POST">
-            <div class="form-group">
-                <label>Outpass Request ID</label>
-                <input type="number" name="request_id" placeholder="e.g. 1024" required style="font-family: var(--font-mono); font-size: 14px;">
+        <form method="POST" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 16px; align-items: flex-end;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label style="font-weight: 600; color: var(--text-primary);">Outpass Request ID</label>
+                <input type="number" name="request_id" placeholder="e.g. 1024" required style="font-family: var(--font-mono); font-size: 15px; padding: 12px 18px;">
             </div>
 
-            <div class="form-group" style="margin-bottom: 24px;">
-                <label>Student OTP Code</label>
-                <input type="text" name="otp" placeholder="••••" required style="letter-spacing: 6px; text-align: center; font-size: 20px; font-weight: 600; font-family: var(--font-mono); color: var(--text-primary);">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label style="font-weight: 600; color: var(--text-primary);">Student 4-Digit OTP Code</label>
+                <input type="text" name="otp" placeholder="••••" required maxlength="6" style="letter-spacing: 6px; text-align: center; font-size: 18px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); padding: 12px 18px;">
             </div>
 
-            <button type="submit" class="btn full">
-                <span>Scan & Verify Outpass</span>
-            </button>
+            <div style="margin-bottom: 0;">
+                <button type="submit" class="btn" style="padding: 13px 28px; width: 100%; white-space: nowrap;">
+                    <span>✓ Scan & Authorize Exit</span>
+                </button>
+            </div>
         </form>
 
         {% if result %}
-            <div class="alert {% if result_type == 'success' %}success{% else %}error{% endif %}" style="margin-top: 20px; border-radius: 16px; flex-direction: column; align-items: flex-start;">
-                <div style="font-family: var(--font-heading); font-weight: 600; font-size: 15px; margin-bottom: 2px;">
+            <div class="alert {% if result_type == 'success' %}success{% else %}error{% endif %}" style="margin-top: 24px; border-radius: 14px; flex-direction: column; align-items: flex-start;">
+                <div style="font-family: var(--font-heading); font-weight: 700; font-size: 15px; margin-bottom: 2px;">
                     {% if result_type == 'success' %}
-                        Pass Verified & Exit Authorized
+                        ✓ Exit Authorized & Successfully Recorded
                     {% else %}
-                        Verification Failed
+                        ✕ Verification Failed
                     {% endif %}
                 </div>
-                <div style="font-size: 13px;">
+                <div style="font-size: 13.5px;">
                     {{ result }}
                 </div>
+                {% if result_type == 'success' %}
+                    <div style="margin-top: 10px;">
+                        <a href="{{ url_for('security_history') }}" class="btn small secondary" style="font-size: 12px; padding: 4px 12px;">
+                            View in Exit History Log →
+                        </a>
+                    </div>
+                {% endif %}
             </div>
         {% endif %}
     </div>

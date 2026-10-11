@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Header Row -->
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <div class="eyebrow-badge">
+            <span class="status-dot"></span>
+            <span>Department Faculty Directory</span>
+        </div>
+        <h1 style="font-family: var(--font-heading); font-size: 28px; font-weight: 600; letter-spacing: -0.025em; color: var(--text-primary); margin-top: 4px; margin-bottom: 4px;">
+            Present Faculty Mentors
+        </h1>
+        <p style="font-size: 14px; color: var(--text-secondary);">
+            Choose a faculty mentor from your department to review and authorize your outpass request.
+        </p>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <a href="{{ url_for('student_dashboard') }}" class="btn small secondary">
+            ← Back to Overview
+        </a>
+        <a href="{{ url_for('apply_outpass') }}" class="btn small">
+            + New Outpass Application
+        </a>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 20px;">
+    {% for mentor in mentors %}
+    <div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 18px; padding: 22px; box-shadow: var(--shadow-pill); transition: var(--transition-fast); display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--google-blue-subtle); color: var(--google-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: var(--font-heading); font-size: 18px;">
+                    {{ mentor.name[0]|upper if mentor.name else 'M' }}
+                </div>
+                <div>
+                    {% if mentor.last_login %}
+                        <span class="status approved" style="font-size: 11px; padding: 3px 9px;">
+                            <span class="status-dot"></span>
+                            Active Today
+                        </span>
+                    {% else %}
+                        <span style="font-size: 11px; color: var(--text-muted); background: var(--bg-surface-container); padding: 3px 9px; border-radius: 999px;">
+                            Offline
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">
+                {{ mentor.name }}
+            </h3>
+            <div style="font-family: var(--font-mono); font-size: 12px; color: var(--google-blue); font-weight: 500; margin-bottom: 12px;">
+                Staff ID: {{ mentor.staff_id }}
+            </div>
+
+            <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">
+                <strong style="color: var(--text-body);">Email:</strong> {{ mentor.email }}
+            </div>
+            {% if mentor.phone_no %}
+            <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+                <strong style="color: var(--text-body);">Phone:</strong> {{ mentor.phone_no }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-hairline);">
+            <a href="{{ url_for('apply_outpass', mentor_id=mentor.mentor_id) }}" class="btn small secondary full" style="font-weight: 600; font-size: 12.5px;">
+                Request Pass from {{ mentor.name.split(' ')[0] }} →
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div style="grid-column: 1 / -1; background: #ffffff; border: 1px dashed var(--border-subtle); border-radius: 16px; padding: 40px; text-align: center; color: var(--text-muted);">
+        No faculty mentors currently listed. You can still submit an outpass request to general department review.
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

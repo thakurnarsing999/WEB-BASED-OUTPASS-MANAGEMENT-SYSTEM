@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Header Row -->
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <div class="eyebrow-badge" style="background: var(--google-green-subtle); color: var(--google-green-dark); border-color: var(--google-green-border);">
+            <span class="status-dot"></span>
+            <span>Campus Gate Audit Log</span>
+        </div>
+        <h1 style="font-family: var(--font-heading); font-size: 28px; font-weight: 600; letter-spacing: -0.025em; color: var(--text-primary); margin-top: 4px; margin-bottom: 4px;">
+            Students Applied for Outpass
+        </h1>
+        <p style="font-size: 14px; color: var(--text-secondary);">
+            Chronological audit log of student pass requests, assigned mentors, verification OTPs, and gate decisions.
+        </p>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn small secondary">
+            ← Back to Overview
+        </a>
+        <div class="status approved">
+            Root Admin
+        </div>
+    </div>
+</div>
+
+{% set total_passes = requests_data|length %}
+{% set pending_count = namespace(value=0) %}
+{% set approved_count = namespace(value=0) %}
+{% for req in requests_data %}
+    {% if req.status == 'Pending' %}
+        {% set pending_count.value = pending_count.value + 1 %}
+    {% elif req.status == 'Approved' or req.status == 'Exited' %}
+        {% set approved_count.value = approved_count.value + 1 %}
+    {% endif %}
+{% endfor %}
+
+<!-- Quick Stat Strip -->
+<div style="display: flex; gap: 14px; margin-bottom: 22px; flex-wrap: wrap;">
+    <div style="padding: 10px 18px; background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 999px; font-size: 13px; color: var(--text-secondary); box-shadow: var(--shadow-pill);">
+        Total Applications: <strong style="color: var(--text-primary);">{{ total_passes }}</strong>
+    </div>
+    <div style="padding: 10px 18px; background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 999px; font-size: 13px; color: var(--text-secondary); box-shadow: var(--shadow-pill);">
+        Pending Review: <strong style="color: var(--google-yellow-dark);">{{ pending_count.value }}</strong>
+    </div>
+    <div style="padding: 10px 18px; background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 999px; font-size: 13px; color: var(--text-secondary); box-shadow: var(--shadow-pill);">
+        Authorized / Exited: <strong style="color: var(--google-green-dark);">{{ approved_count.value }}</strong>
+    </div>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Pass ID</th>
+                <th>Student Name</th>
+                <th>Roll No</th>
+                <th>Department</th>
+                <th>Assigned Mentor</th>
+                <th>Reason</th>
+                <th>Exit Schedule</th>
+                <th>Status</th>
+                <th>Gate OTP</th>
+                <th>Mentor Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requests_data %}
+            <tr>
+                <td class="mono-cell">#{{ req.request_id }}</td>
+                <td style="color: var(--text-primary); font-weight: 600;">{{ req.name }}</td>
+                <td class="mono-cell" style="font-size: 12px; color: var(--text-secondary);">{{ req.roll_no }}</td>
+                <td>{{ req.department }} <span style="color: var(--text-muted); font-size: 11.5px;">({{ req.year }})</span></td>
+                <td>
+                    {% if req.mentor_name %}
+                        <span style="font-weight: 500; color: var(--google-blue);">{{ req.mentor_name }}</span>
+                    {% else %}
+                        <span style="color: var(--text-muted); font-style: italic;">General / Any</span>
+                    {% endif %}
+                </td>
+                <td><div class="reason-text" title="{{ req.reason }}">{{ req.reason }}</div></td>
+                <td>
+                    <div style="font-weight: 600; color: var(--text-primary);">{{ req.out_date }}</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted); font-family: var(--font-mono);">{{ req.out_time }}</div>
+                </td>
+                <td>
+                    <span class="status {{ req.status|lower }}">
+                        {{ req.status }}
+                    </span>
+                </td>
+                <td class="mono-cell" style="font-size: 14px; font-weight: 700; color: var(--color-green);">
+                    {% if req.otp %}
+                        {{ req.otp }}
+                    {% else %}
+                        <span style="color: var(--text-dim);">-</span>
+                    {% endif %}
+                </td>
+                <td style="font-size: 12.5px;">
+                    {% if req.mentor_remarks %}
+                        {{ req.mentor_remarks }}
+                    {% else %}
+                        <span style="color: var(--text-muted); font-style: italic;">No remarks</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="10" style="text-align: center; color: var(--text-muted); padding: 50px 0;">
+                    No student outpass applications submitted yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

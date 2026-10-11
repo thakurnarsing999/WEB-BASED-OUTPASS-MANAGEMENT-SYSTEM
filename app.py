@@ -175,6 +175,9 @@ def login():
                 flash("Incorrect password for this student account.", "error")
                 return redirect(url_for("home"))
 
+            cursor.execute("UPDATE students SET last_login = NOW() WHERE student_id = %s", (user["student_id"],))
+            conn.commit()
+
             session.clear()
             session["student_id"] = user["student_id"]
             session["student_name"] = user["name"]
@@ -193,6 +196,9 @@ def login():
             if not check_password_hash(user["password"], password):
                 flash("Incorrect password for this mentor account.", "error")
                 return redirect(url_for("home"))
+
+            cursor.execute("UPDATE mentors SET last_login = NOW() WHERE mentor_id = %s", (user["mentor_id"],))
+            conn.commit()
 
             session.clear()
             session["mentor_id"] = user["mentor_id"]
@@ -214,6 +220,9 @@ def login():
                 flash("Incorrect password for this security account.", "error")
                 return redirect(url_for("home"))
 
+            cursor.execute("UPDATE security_users SET last_login = NOW() WHERE security_id = %s", (user["security_id"],))
+            conn.commit()
+
             session.clear()
             session["security_id"] = user["security_id"]
             session["security_username"] = user["name"]
@@ -233,6 +242,9 @@ def login():
             if not check_password_hash(user["password"], password):
                 flash("Incorrect password for this admin account.", "error")
                 return redirect(url_for("home"))
+
+            cursor.execute("UPDATE admins SET last_login = NOW() WHERE admin_id = %s", (user["admin_id"],))
+            conn.commit()
 
             session.clear()
             session["admin_id"] = user["admin_id"]
@@ -266,7 +278,57 @@ def student_dashboard():
         flash("Please login first.", "error")
         return redirect(url_for("home"))
 
-    return render_template("student_dashboard.html")
+    conn = None
+    cursor = None
+    mentors_count = 0
+    requests_count = 0
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+        cursor.execute("SELECT COUNT(*) AS count FROM mentors")
+        res = cursor.fetchone()
+        if res:
+            mentors_count = res["count"]
+
+        cursor.execute("SELECT COUNT(*) AS count FROM outpass_requests WHERE student_id = %s", (session["student_id"],))
+        res2 = cursor.fetchone()
+        if res2:
+            requests_count = res2["count"]
+    except Exception as e:
+        flash(f"Database error: {e}", "error")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return render_template("student_dashboard.html", mentors_count=mentors_count, requests_count=requests_count)
+
+
+@app.route("/student_mentors")
+def student_mentors():
+    if "student_id" not in session:
+        flash("Please login first.", "error")
+        return redirect(url_for("home"))
+
+    conn = None
+    cursor = None
+    mentors = []
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("SELECT mentor_id, name, staff_id, email, phone_no, last_login FROM mentors ORDER BY mentor_id ASC")
+        mentors = cursor.fetchall()
+    except Exception as e:
+        flash(f"Database error: {e}", "error")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return render_template("student_mentors.html", mentors=mentors)
 
 
 @app.route("/apply_outpass", methods=["GET", "POST"])
@@ -275,50 +337,61 @@ def apply_outpass():
         flash("Please login first.", "error")
         return redirect(url_for("home"))
 
-    if request.method == "POST":
-        student_id = session["student_id"]
-        reason = request.form["reason"]
-        out_date = request.form["out_date"]
-        out_time = request.form["out_time"]
-        parent_contact = request.form["parent_contact"]
+    conn = None
+    cursor = None
+    mentors = []
 
-        try:
-            out_date_obj = datetime.datetime.strptime(out_date, "%Y-%m-%d").date()
-            if out_date_obj < datetime.date.today():
-                flash("Out date cannot be in the past.", "error")
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("SELECT mentor_id, name, staff_id FROM mentors ORDER BY name ASC")
+        mentors = cursor.fetchall()
+
+        if request.method == "POST":
+            student_id = session["student_id"]
+            mentor_id = request.form.get("mentor_id")
+            if not mentor_id or mentor_id == "all" or mentor_id == "None":
+                mentor_id = None
+            else:
+                mentor_id = int(mentor_id)
+
+            reason = request.form["reason"]
+            out_date = request.form["out_date"]
+            out_time = request.form["out_time"]
+            parent_contact = request.form["parent_contact"]
+
+            try:
+                out_date_obj = datetime.datetime.strptime(out_date, "%Y-%m-%d").date()
+                if out_date_obj < datetime.date.today():
+                    flash("Out date cannot be in the past.", "error")
+                    return redirect(url_for("apply_outpass"))
+            except ValueError:
+                flash("Invalid date format.", "error")
                 return redirect(url_for("apply_outpass"))
-        except ValueError:
-            flash("Invalid date format.", "error")
-            return redirect(url_for("apply_outpass"))
-
-        conn = None
-        cursor = None
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
 
             query = """
                 INSERT INTO outpass_requests 
-                (student_id, reason, out_date, out_time, parent_contact, status)
-                VALUES (%s, %s, %s, %s, %s, 'Pending')
+                (student_id, mentor_id, reason, out_date, out_time, parent_contact, status)
+                VALUES (%s, %s, %s, %s, %s, %s, 'Pending')
             """
-            values = (student_id, reason, out_date, out_time, parent_contact)
+            values = (student_id, mentor_id, reason, out_date, out_time, parent_contact)
 
             cursor.execute(query, values)
             conn.commit()
 
             flash("Out pass request submitted successfully.", "success")
             return redirect(url_for("view_status"))
-        except Exception as e:
-            flash(f"Database error: {e}", "error")
-            return redirect(url_for("apply_outpass"))
-        finally:
-            if cursor:
-                cursor.close()
-            if conn:
-                conn.close()
 
-    return render_template("apply_outpass.html")
+    except Exception as e:
+        flash(f"Database error: {e}", "error")
+        return redirect(url_for("apply_outpass"))
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return render_template("apply_outpass.html", mentors=mentors)
 
 
 @app.route("/view_status")
@@ -337,9 +410,11 @@ def view_status():
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         query = """
-            SELECT * FROM outpass_requests
-            WHERE student_id = %s
-            ORDER BY request_id ASC
+            SELECT r.*, m.name AS mentor_name 
+            FROM outpass_requests r
+            LEFT JOIN mentors m ON r.mentor_id = m.mentor_id
+            WHERE r.student_id = %s
+            ORDER BY r.request_id DESC
         """
         cursor.execute(query, (student_id,))
         requests_data = cursor.fetchall()
@@ -371,6 +446,7 @@ def mentor_dashboard():
     conn = None
     cursor = None
     requests_data = []
+    student_count = 0
     try:
         conn = get_db_connection()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -388,13 +464,21 @@ def mentor_dashboard():
                 r.parent_contact,
                 r.status,
                 r.otp,
-                r.mentor_remarks
+                r.mentor_remarks,
+                r.mentor_id,
+                m.name AS mentor_name
             FROM outpass_requests r
             JOIN students s ON r.student_id = s.student_id
-            ORDER BY r.request_id ASC
+            LEFT JOIN mentors m ON r.mentor_id = m.mentor_id
+            ORDER BY r.request_id DESC
         """
         cursor.execute(query)
         requests_data = cursor.fetchall()
+
+        cursor.execute("SELECT COUNT(*) AS count FROM students")
+        res = cursor.fetchone()
+        if res:
+            student_count = res["count"]
     except Exception as e:
         flash(f"Database error: {e}", "error")
     finally:
@@ -403,7 +487,37 @@ def mentor_dashboard():
         if conn:
             conn.close()
 
-    return render_template("mentor_dashboard.html", requests_data=requests_data)
+    return render_template("mentor_dashboard.html", requests_data=requests_data, student_count=student_count)
+
+
+@app.route("/mentor_students")
+def mentor_students():
+    if "mentor_id" not in session:
+        flash("Please login as mentor first.", "error")
+        return redirect(url_for("home"))
+
+    conn = None
+    cursor = None
+    students = []
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+        cursor.execute("""
+            SELECT student_id, name, roll_no, department, year, email, phone_no, last_login 
+            FROM students 
+            ORDER BY student_id ASC
+        """)
+        students = cursor.fetchall()
+    except Exception as e:
+        flash(f"Database error: {e}", "error")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return render_template("mentor_students.html", students=students)
 
 
 @app.route("/approve_request/<int:request_id>", methods=["POST"])
@@ -493,29 +607,130 @@ def admin_dashboard():
 
     conn = None
     cursor = None
-    students = []
-    requests_data = []
+    student_count = 0
+    mentor_count = 0
+    security_count = 0
+    request_count = 0
+    pending_count = 0
     try:
         conn = get_db_connection()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-        cursor.execute("SELECT * FROM students ORDER BY student_id ASC")
+        cursor.execute("SELECT COUNT(*) AS count FROM students")
+        student_count = cursor.fetchone()["count"]
+
+        cursor.execute("SELECT COUNT(*) AS count FROM mentors")
+        mentor_count = cursor.fetchone()["count"]
+
+        cursor.execute("SELECT COUNT(*) AS count FROM security_users")
+        security_count = cursor.fetchone()["count"]
+
+        cursor.execute("SELECT COUNT(*) AS count FROM outpass_requests")
+        request_count = cursor.fetchone()["count"]
+
+        cursor.execute("SELECT COUNT(*) AS count FROM outpass_requests WHERE status = 'Pending'")
+        pending_count = cursor.fetchone()["count"]
+    except Exception as e:
+        flash(f"Database error: {e}", "error")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return render_template(
+        "admin_dashboard.html",
+        student_count=student_count,
+        mentor_count=mentor_count,
+        security_count=security_count,
+        request_count=request_count,
+        pending_count=pending_count
+    )
+
+
+@app.route("/admin_accounts")
+def admin_accounts():
+    if "admin_id" not in session:
+        flash("Please login as admin first.", "error")
+        return redirect(url_for("home"))
+
+    conn = None
+    cursor = None
+    students = []
+    mentors = []
+    security_users = []
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+        cursor.execute("""
+            SELECT student_id, name, roll_no, email, department, year, phone_no, last_login 
+            FROM students 
+            ORDER BY student_id ASC
+        """)
         students = cursor.fetchall()
+
+        cursor.execute("""
+            SELECT mentor_id, name, staff_id, email, phone_no, last_login 
+            FROM mentors 
+            ORDER BY mentor_id ASC
+        """)
+        mentors = cursor.fetchall()
+
+        cursor.execute("""
+            SELECT security_id, name, email, phone_no, last_login 
+            FROM security_users 
+            ORDER BY security_id ASC
+        """)
+        security_users = cursor.fetchall()
+    except Exception as e:
+        flash(f"Database error: {e}", "error")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return render_template(
+        "admin_accounts.html",
+        students=students,
+        mentors=mentors,
+        security_users=security_users
+    )
+
+
+@app.route("/admin_outpasses")
+def admin_outpasses():
+    if "admin_id" not in session:
+        flash("Please login as admin first.", "error")
+        return redirect(url_for("home"))
+
+    conn = None
+    cursor = None
+    requests_data = []
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         query = """
             SELECT 
                 r.request_id,
                 s.name,
                 s.roll_no,
+                s.department,
+                s.year,
                 r.reason,
                 r.out_date,
                 r.out_time,
+                r.parent_contact,
                 r.status,
                 r.otp,
-                r.mentor_remarks
+                r.mentor_remarks,
+                m.name AS mentor_name
             FROM outpass_requests r
             JOIN students s ON r.student_id = s.student_id
-            ORDER BY r.request_id ASC
+            LEFT JOIN mentors m ON r.mentor_id = m.mentor_id
+            ORDER BY r.request_id DESC
         """
         cursor.execute(query)
         requests_data = cursor.fetchall()
@@ -527,11 +742,7 @@ def admin_dashboard():
         if conn:
             conn.close()
 
-    return render_template(
-        "admin_dashboard.html",
-        students=students,
-        requests_data=requests_data
-    )
+    return render_template("admin_outpasses.html", requests_data=requests_data)
 
 
 # ---------------- SECURITY MODULE ----------------
@@ -546,20 +757,21 @@ def legacy_security_auth():
 def security_dashboard():
     if "security_id" not in session:
         flash("Please login as security first.", "error")
-        return redirect(url_for("security_login"))
+        return redirect(url_for("home"))
 
     result = None
     result_type = None
+    history_count = 0
 
-    if request.method == "POST":
-        request_id = request.form["request_id"]
-        otp = request.form["otp"]
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-        conn = None
-        cursor = None
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=RealDictCursor)
+        if request.method == "POST":
+            request_id = request.form["request_id"]
+            otp = request.form["otp"]
 
             query = """
                 SELECT 
@@ -579,59 +791,106 @@ def security_dashboard():
             outpass = cursor.fetchone()
 
             if outpass is None:
-                result = "Invalid Request ID. No out-pass found."
+                result = "Invalid Request ID. No outpass record found."
                 result_type = "error"
 
             elif outpass["status"] != "Approved":
-                result = f"Pass not approved. Current status is {outpass['status']}."
+                result = f"Pass not approved for exit. Current status is '{outpass['status']}'."
                 result_type = "error"
 
             elif outpass["out_date"] != datetime.date.today():
-                result = f"Pass is for a different date: {outpass['out_date']}. Today is {datetime.date.today()}."
+                result = f"Date mismatch: Pass is scheduled for {outpass['out_date']}. Today is {datetime.date.today()}."
                 result_type = "error"
 
             elif str(outpass["otp"]) != str(otp):
-                result = "Invalid OTP. Please check Request ID and OTP."
+                result = "Invalid verification OTP code. Gate exit denied."
                 result_type = "error"
 
             else:
                 insert_query = """
                     INSERT INTO security_logs 
-                    (request_id, otp, verification_status)
-                    VALUES (%s, %s, 'Exited')
+                    (request_id, otp, verification_status, exit_time)
+                    VALUES (%s, %s, 'Exited', NOW())
                 """
                 cursor.execute(insert_query, (request_id, otp))
-                
-                # Update status of outpass request so it cannot be used again
+
                 update_query = """
                     UPDATE outpass_requests 
                     SET status = 'Exited' 
                     WHERE request_id = %s
                 """
                 cursor.execute(update_query, (request_id,))
-                
                 conn.commit()
 
                 result = (
-                    f"Pass valid. Student allowed to exit. "
-                    f"Name: {outpass['name']}, Roll No: {outpass['roll_no']}"
+                    f"Pass Validated. Exit Authorized for {outpass['name']} (Roll: {outpass['roll_no']})."
                 )
                 result_type = "success"
 
-        except Exception as e:
-            result = f"Database error: {e}"
-            result_type = "error"
-        finally:
-            if cursor:
-                cursor.close()
-            if conn:
-                conn.close()
+        cursor.execute("SELECT COUNT(*) AS count FROM security_logs")
+        res = cursor.fetchone()
+        if res:
+            history_count = res["count"]
+
+    except Exception as e:
+        result = f"Database error: {e}"
+        result_type = "error"
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
     return render_template(
         "security_dashboard.html",
         result=result,
-        result_type=result_type
+        result_type=result_type,
+        history_count=history_count
     )
+
+
+@app.route("/security_history")
+def security_history():
+    if "security_id" not in session:
+        flash("Please login as security first.", "error")
+        return redirect(url_for("home"))
+
+    conn = None
+    cursor = None
+    history_logs = []
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+        history_query = """
+            SELECT 
+                l.log_id,
+                l.request_id,
+                l.otp,
+                l.verification_status,
+                l.exit_time,
+                s.name,
+                s.roll_no,
+                s.department,
+                r.out_date,
+                r.out_time,
+                r.reason
+            FROM security_logs l
+            JOIN outpass_requests r ON l.request_id = r.request_id
+            JOIN students s ON r.student_id = s.student_id
+            ORDER BY l.log_id DESC
+        """
+        cursor.execute(history_query)
+        history_logs = cursor.fetchall()
+    except Exception as e:
+        flash(f"Database error: {e}", "error")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return render_template("security_history.html", history_logs=history_logs)
 
 
 # ---------------- LOGOUT ----------------

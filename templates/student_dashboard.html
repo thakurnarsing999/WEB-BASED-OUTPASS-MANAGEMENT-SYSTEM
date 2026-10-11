@@ -33,10 +33,24 @@
                     Digital Exit Pass
                 </div>
                 <h2>Apply for Outpass</h2>
-                <p>Submit a formal gate pass request with destination details and exit timetable. Your assigned department mentor will review and generate a gate OTP.</p>
+                <p>Submit a formal gate pass request with destination details, exit timetable, and guardian contact. Select a specific department mentor or general review.</p>
             </div>
             <a class="btn" href="{{ url_for('apply_outpass') }}" style="align-self: flex-start;">
-                <span>New Application</span>
+                <span>New Application →</span>
+            </a>
+        </div>
+
+        <!-- Mentors Card (Google Spectrum Accent) -->
+        <div class="card" style="border-top: 3px solid var(--google-yellow);">
+            <div>
+                <div style="display: inline-block; padding: 4px 10px; border-radius: 999px; background: var(--google-yellow-subtle); color: var(--google-yellow-dark); font-size: 11.5px; font-weight: 600; text-transform: uppercase; margin-bottom: 14px; letter-spacing: 0.04em;">
+                    Faculty Approvers
+                </div>
+                <h2>Present Faculty Mentors</h2>
+                <p>Browse active department faculty mentors ({{ mentors_count }} available), check their availability and staff credentials, and request passes directly.</p>
+            </div>
+            <a class="btn secondary" href="{{ url_for('student_mentors') }}" style="align-self: flex-start;">
+                <span>View Mentors Directory →</span>
             </a>
         </div>
         
@@ -47,10 +61,10 @@
                     Authorization Log
                 </div>
                 <h2>Outpass History</h2>
-                <p>View real-time status of your pending outpass requests, read faculty feedback, and present your 4-digit verification code at security gates.</p>
+                <p>View real-time status of your submitted outpass requests ({{ requests_count }} records), read mentor remarks, and retrieve 4-digit gate OTP codes.</p>
             </div>
             <a class="btn secondary" href="{{ url_for('view_status') }}" style="align-self: flex-start;">
-                <span>Review History</span>
+                <span>Review History →</span>
             </a>
         </div>
 
