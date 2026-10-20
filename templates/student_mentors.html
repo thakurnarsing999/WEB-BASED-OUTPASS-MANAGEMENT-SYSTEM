@@ -28,7 +28,7 @@
 
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 20px;">
     {% for mentor in mentors %}
-    <div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 18px; padding: 22px; box-shadow: var(--shadow-pill); transition: var(--transition-fast); display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 18px; padding: 22px; box-shadow: var(--shadow-pill); transition: var(--transition-fast); display: flex; flex-direction: column; justify-content: space-between; position: relative;">
         <div>
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                 <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--google-blue-subtle); color: var(--google-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: var(--font-heading); font-size: 18px;">
@@ -72,7 +72,7 @@
         </div>
     </div>
     {% else %}
-    <div style="grid-column: 1 / -1; background: #ffffff; border: 1px dashed var(--border-subtle); border-radius: 16px; padding: 40px; text-align: center; color: var(--text-muted);">
+    <div style="grid-column: 1 / -1; background: var(--bg-surface); border: 1px dashed var(--border-subtle); border-radius: 16px; padding: 40px; text-align: center; color: var(--text-muted);">
         No faculty mentors currently listed. You can still submit an outpass request to general department review.
     </div>
     {% endfor %}
